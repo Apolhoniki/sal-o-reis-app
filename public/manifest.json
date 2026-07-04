@@ -1,0 +1,26 @@
+{
+  "short_name": "Salão Reis",
+  "name": "Salão Reis - Agendamentos & Estilo",
+  "description": "Aplicativo de agendamento de horários e portfólio do Salão Reis pelo hair stylist Adson.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["beauty", "lifestyle", "utilities"]
+}

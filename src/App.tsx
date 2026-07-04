@@ -29,6 +29,7 @@ import { NotificationCenter } from './components/NotificationCenter';
 import { ProfileView } from './components/ProfileView';
 import { BottomNavigation } from './components/BottomNavigation';
 import { PinModal } from './components/PinModal';
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { DatePaginationControls } from './components/DatePaginationControls';
 import { parseDateFromId } from './utils/dateHelpers';
 import { Sparkles, Calendar, Heart, ShieldAlert, ChevronRight, MessageSquare } from 'lucide-react';
@@ -617,6 +618,9 @@ export default function App() {
             setIsPinModalOpen(false);
           }}
         />
+
+        {/* PWA Mobile Installation Prompt Banner */}
+        <PWAInstallPrompt />
       </div>
     </div>
   );
