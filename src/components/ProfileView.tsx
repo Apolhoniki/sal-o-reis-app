@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Crown, MapPin, Phone, Instagram, Clock, Scissors, Award, Sparkles, Edit3, Save, Plus, X, Trash2, Calendar } from 'lucide-react';
 import { ServiceItem, AdsonProfileInfo } from '../types';
 import { SALAO_NAME } from '../data/mockData';
@@ -28,8 +28,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [editTitle, setEditTitle] = useState(profileInfo.title);
   const [editExpYears, setEditExpYears] = useState(profileInfo.experienceYears);
   const [editPhone, setEditPhone] = useState(profileInfo.phone);
+  const [editWhatsapp, setEditWhatsapp] = useState(profileInfo.whatsapp);
   const [editAddress, setEditAddress] = useState(profileInfo.address);
   const [editHours, setEditHours] = useState(profileInfo.operatingHours);
+
+  useEffect(() => {
+    setEditBio(profileInfo.bio);
+    setEditTitle(profileInfo.title);
+    setEditExpYears(profileInfo.experienceYears);
+    setEditPhone(profileInfo.phone);
+    setEditWhatsapp(profileInfo.whatsapp);
+    setEditAddress(profileInfo.address);
+    setEditHours(profileInfo.operatingHours);
+  }, [profileInfo]);
 
   // Add Service Modal State
   const [isAddingService, setIsAddingService] = useState(false);
@@ -59,6 +70,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         bio: editBio,
         experienceYears: Number(editExpYears),
         phone: editPhone,
+        whatsapp: editWhatsapp.trim() || editPhone.trim(),
         address: editAddress,
         operatingHours: editHours,
       });
@@ -283,23 +295,34 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               />
             </div>
 
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Anos de Experiência</label>
+              <input
+                type="number"
+                value={editExpYears}
+                onChange={(e) => setEditExpYears(Number(e.target.value))}
+                className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-3 py-2 text-xs text-slate-100 focus:border-[#D4AF37] outline-none"
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Anos Experiência</label>
+                <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Telefone Principal</label>
                 <input
-                  type="number"
-                  value={editExpYears}
-                  onChange={(e) => setEditExpYears(Number(e.target.value))}
+                  type="text"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
                   className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-3 py-2 text-xs text-slate-100 focus:border-[#D4AF37] outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Telefone / Whats</label>
+                <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">WhatsApp (com DDD)</label>
                 <input
                   type="text"
-                  value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
+                  value={editWhatsapp}
+                  onChange={(e) => setEditWhatsapp(e.target.value)}
+                  placeholder="5592984570443"
                   className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-3 py-2 text-xs text-slate-100 focus:border-[#D4AF37] outline-none"
                 />
               </div>

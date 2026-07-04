@@ -44,7 +44,26 @@ export default function App() {
   const [bookings, setBookings] = useState<BookingRequest[]>(INITIAL_BOOKINGS);
   const [history, setHistory] = useState<ClientHistoryItem[]>(INITIAL_CLIENT_HISTORY);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
-  const [profileInfo, setProfileInfo] = useState<AdsonProfileInfo>(INITIAL_PROFILE_INFO);
+  const [profileInfo, setProfileInfo] = useState<AdsonProfileInfo>(() => {
+    try {
+      const saved = localStorage.getItem('salao_reis_profile_info');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Error loading profile info from localStorage:', e);
+    }
+    return INITIAL_PROFILE_INFO;
+  });
+
+  const handleUpdateProfileInfo = (updatedInfo: AdsonProfileInfo) => {
+    setProfileInfo(updatedInfo);
+    try {
+      localStorage.setItem('salao_reis_profile_info', JSON.stringify(updatedInfo));
+    } catch (e) {
+      console.error('Error saving profile info to localStorage:', e);
+    }
+  };
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('agendar');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -510,8 +529,9 @@ export default function App() {
                 <p className="text-xs text-slate-400 mb-2">Preferir falar direto com o Adson Reis?</p>
                 <button
                   onClick={() => {
+                    const cleanNumber = profileInfo.whatsapp.replace(/\D/g, '');
                     window.open(
-                      'https://wa.me/5511999998888?text=Oi%2C%20Adson!%20Gostaria%20de%20saber%20se%20tem%20alguma%20vaga%20especial%20esta%20semana.',
+                      `https://wa.me/${cleanNumber}?text=${encodeURIComponent('Oi, Adson! Gostaria de saber se tem alguma vaga especial esta semana.')}`,
                       '_blank'
                     );
                   }}
@@ -528,6 +548,7 @@ export default function App() {
           {activeTab === 'portfolio' && (
             <PortfolioFeed
               portfolio={portfolio}
+              whatsappNumber={profileInfo.whatsapp}
               onSelectPhotoForBooking={(photoUrl) => {
                 setPreselectedPhoto(photoUrl);
               }}
@@ -555,7 +576,7 @@ export default function App() {
               profileInfo={profileInfo}
               services={services}
               isAdmin={isAdmin}
-              onUpdateProfileInfo={setProfileInfo}
+              onUpdateProfileInfo={handleUpdateProfileInfo}
               onAddService={handleAddService}
               onDeleteService={handleDeleteService}
               onSelectServiceToBook={(srvName) => {
@@ -582,7 +603,7 @@ export default function App() {
               onAddPortfolioItem={handleAddPortfolioItem}
               onUpdatePortfolioItem={handleUpdatePortfolioItem}
               onDeletePortfolioItem={handleDeletePortfolioItem}
-              onUpdateProfileInfo={setProfileInfo}
+              onUpdateProfileInfo={handleUpdateProfileInfo}
               onExitAdmin={handleExitAdmin}
             />
           )}
@@ -594,6 +615,7 @@ export default function App() {
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
           preselectedPhoto={preselectedPhoto}
+          whatsappNumber={profileInfo.whatsapp}
           onConfirmBooking={handleConfirmBooking}
         />
 

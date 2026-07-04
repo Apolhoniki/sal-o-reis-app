@@ -8,6 +8,7 @@ interface BookingDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   preselectedPhoto?: string;
+  whatsappNumber?: string;
   onConfirmBooking: (bookingData: {
     clientName: string;
     clientPhone: string;
@@ -26,6 +27,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
   isOpen,
   onClose,
   preselectedPhoto,
+  whatsappNumber,
   onConfirmBooking,
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<Period | null>(null);
@@ -142,7 +144,9 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
     }
 
     const encodedText = encodeURIComponent(message);
-    return `https://wa.me/${ADSON_WHATSAPP_NUMBER}?text=${encodedText}`;
+    const targetNumber = whatsappNumber || ADSON_WHATSAPP_NUMBER;
+    const cleanNumber = targetNumber.replace(/\D/g, '');
+    return `https://wa.me/${cleanNumber}?text=${encodedText}`;
   };
 
   const handleConsensusSubmit = () => {

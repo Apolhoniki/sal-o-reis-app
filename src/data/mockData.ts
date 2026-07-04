@@ -1,8 +1,8 @@
 import { DaySchedule, PortfolioItem, ServiceItem, BookingRequest, ClientHistoryItem, AppNotification, AdsonProfileInfo } from '../types';
 import { generateInitialScheduleDays } from '../utils/dateHelpers';
 
-export const ADSON_WHATSAPP_NUMBER = '5511999998888'; // Adson's direct WhatsApp
-export const ADSON_PHONE = '11999998888';
+export const ADSON_WHATSAPP_NUMBER = '5592984570443'; // Adson's direct WhatsApp
+export const ADSON_PHONE = '92984570443';
 export const ADSON_NAME = 'Adson Reis';
 export const SALAO_NAME = 'Salão Reis';
 export const SALAO_ADDRESS = 'Av. das Nações, 1420 - Centro, São Paulo - SP';
@@ -13,8 +13,8 @@ export const INITIAL_PROFILE_INFO: AdsonProfileInfo = {
   title: 'Master Hairstylist & Specialist em Visagismo',
   bio: 'Apaixonado pela arte da transformação feminina há mais de 8 anos. Especialista internacional em técnicas de Morena Iluminada sem marcas, Blond Dourado saudável e Visagismo Facial personalizado. Meu objetivo é realçar a beleza única de cada cliente com sofisticação e saúde capilar em cada detalhe.',
   experienceYears: 8,
-  phone: '(11) 99999-8888',
-  whatsapp: '5511999998888',
+  phone: '(92) 98457-0443',
+  whatsapp: '5592984570443',
   instagram: '@salaoreis_oficial',
   address: 'Av. das Nações, 1420 - Centro, São Paulo - SP',
   operatingHours: 'Terça a Sábado: 08:00h às 21:00h',

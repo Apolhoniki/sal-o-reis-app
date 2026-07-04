@@ -6,6 +6,7 @@ import { PortfolioModal } from './PortfolioModal';
 
 interface PortfolioFeedProps {
   portfolio: PortfolioItem[];
+  whatsappNumber?: string;
   onSelectPhotoForBooking: (photoUrl: string) => void;
   onGoToAgendar: () => void;
   isAdmin?: boolean;
@@ -15,6 +16,7 @@ interface PortfolioFeedProps {
 
 export const PortfolioFeed: React.FC<PortfolioFeedProps> = ({
   portfolio,
+  whatsappNumber,
   onSelectPhotoForBooking,
   onGoToAgendar,
   isAdmin,
@@ -48,7 +50,9 @@ export const PortfolioFeed: React.FC<PortfolioFeedProps> = ({
 
   const handleServiceQuestionWhatsApp = (title: string) => {
     const message = `Oi, Adson! Gostei bastante dessa referência de [${title}] do seu portfólio no aplicativo do Salão Reis. Gostaria de tirar algumas dúvidas sobre este serviço e saber se fica bem para o meu cabelo!`;
-    const url = `https://wa.me/${ADSON_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const targetNumber = whatsappNumber || ADSON_WHATSAPP_NUMBER;
+    const cleanNumber = targetNumber.replace(/\D/g, '');
+    const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
 
