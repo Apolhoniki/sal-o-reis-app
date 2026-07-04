@@ -1,0 +1,6 @@
+{
+  "name": "Salão Reis - Agendamento",
+  "description": "Aplicativo de agendamento dinâmico e elegante para o Salão Reis. Interface escura de alto luxo com semáforo de disponibilidade e integração direta com o WhatsApp do Adson.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
