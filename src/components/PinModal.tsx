@@ -59,7 +59,7 @@ export const PinModal: React.FC<PinModalProps> = ({ isOpen, onClose, onSuccess }
   };
 
   const verifyPin = (enteredPin: string) => {
-    if (enteredPin === '1234') {
+    if (enteredPin === '0703') {
       onSuccess();
     } else {
       setErrorMsg('PIN incorreto. Tente novamente.');
@@ -137,10 +137,6 @@ export const PinModal: React.FC<PinModalProps> = ({ isOpen, onClose, onSuccess }
             </button>
           </div>
         </form>
-
-        <p className="text-[10px] text-gray-500 text-center mt-4">
-          PIN padrão de teste: <strong className="text-gray-300">1234</strong>
-        </p>
       </div>
     </div>
   );
