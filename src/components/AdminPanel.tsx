@@ -63,6 +63,8 @@ interface AdminPanelProps {
   onToggleDayBlock: (dayId: string) => void;
   onToggleExtraSlot?: (dateId: string, period: Period) => void;
   onAddClientHistory: (item: Omit<ClientHistoryItem, 'id'>) => void;
+  onDeleteClientHistory?: (id: string) => void;
+  onDeleteClientGroup?: (clientName: string) => void;
   onAddPortfolioItem: (item: Omit<PortfolioItem, 'id'>) => void;
   onUpdatePortfolioItem?: (item: PortfolioItem) => void;
   onDeletePortfolioItem: (id: string) => void;
@@ -83,6 +85,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onToggleDayBlock,
   onToggleExtraSlot,
   onAddClientHistory,
+  onDeleteClientHistory,
+  onDeleteClientGroup,
   onAddPortfolioItem,
   onUpdatePortfolioItem,
   onDeletePortfolioItem,
@@ -769,6 +773,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       >
                         Ver Perfil
                       </button>
+                      {onDeleteClientGroup && (
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Tem certeza que deseja excluir o perfil e histórico de "${clientGroup.clientName}"?`)) {
+                              onDeleteClientGroup(clientGroup.clientName);
+                            }
+                          }}
+                          className="p-2 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 text-xs font-bold transition-all"
+                          title="Excluir Perfil da Cliente"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-400" />
+                        </button>
+                      )}
                     </div>
                   </div>
 

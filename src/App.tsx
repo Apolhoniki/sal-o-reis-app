@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   DaySchedule,
   PortfolioItem,
@@ -20,6 +20,22 @@ import {
   INITIAL_PROFILE_INFO,
   SALAO_NAME,
 } from './data/mockData';
+import { isSupabaseConfigured } from './lib/supabase';
+import {
+  fetchProfileInfoFromSupabase,
+  saveProfileInfoToSupabase,
+  fetchDaysFromSupabase,
+  saveDayScheduleToSupabase,
+  saveBulkDaysToSupabase,
+  fetchBookingsFromSupabase,
+  createBookingInSupabase,
+  updateBookingStatusInSupabase,
+  fetchClientsFromSupabase,
+  saveClientToSupabase,
+  deleteClientFromSupabase,
+  deleteClientGroupFromSupabase,
+  subscribeToRealtimeUpdates,
+} from './services/supabaseService';
 import { Header } from './components/Header';
 import { DayCard } from './components/DayCard';
 import { BookingDrawer } from './components/BookingDrawer';
@@ -56,8 +72,67 @@ export default function App() {
     return INITIAL_PROFILE_INFO;
   });
 
+  // Supabase Data Initialization & Realtime Subscription
+  const loadSupabaseData = useCallback(async () => {
+    if (!isSupabaseConfigured()) return;
+
+    try {
+      const remoteProfile = await fetchProfileInfoFromSupabase();
+      if (remoteProfile) {
+        setProfileInfo(remoteProfile);
+      }
+
+      const remoteDays = await fetchDaysFromSupabase();
+      if (remoteDays && remoteDays.length > 0) {
+        setDays(remoteDays);
+      } else {
+        await saveBulkDaysToSupabase(INITIAL_DAYS);
+      }
+
+      const remoteBookings = await fetchBookingsFromSupabase();
+      if (remoteBookings) {
+        setBookings(remoteBookings);
+      }
+
+      const remoteClients = await fetchClientsFromSupabase();
+      if (remoteClients) {
+        setHistory(remoteClients);
+      }
+    } catch (err) {
+      console.error('[App] Error loading Supabase data:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSupabaseData();
+
+    // Subscribe to Supabase Realtime changes across connected client devices
+    const unsubscribe = subscribeToRealtimeUpdates({
+      onProfileChange: (updatedProfile) => {
+        setProfileInfo(updatedProfile);
+      },
+      onDaysChange: async () => {
+        const remoteDays = await fetchDaysFromSupabase();
+        if (remoteDays) setDays(remoteDays);
+      },
+      onBookingsChange: async () => {
+        const remoteBookings = await fetchBookingsFromSupabase();
+        if (remoteBookings) setBookings(remoteBookings);
+      },
+      onClientsChange: async () => {
+        const remoteClients = await fetchClientsFromSupabase();
+        if (remoteClients) setHistory(remoteClients);
+      },
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [loadSupabaseData]);
+
   const handleUpdateProfileInfo = (updatedInfo: AdsonProfileInfo) => {
     setProfileInfo(updatedInfo);
+    saveProfileInfoToSupabase(updatedInfo);
     try {
       localStorage.setItem('salao_reis_profile_info', JSON.stringify(updatedInfo));
     } catch (e) {
@@ -197,6 +272,7 @@ export default function App() {
     };
 
     setBookings((prev) => [newBooking, ...prev]);
+    createBookingInSupabase(newBooking);
 
     // Hold period in schedule & clear any active extra slot to prevent double-booking
     setDays((prev) =>
@@ -210,7 +286,9 @@ export default function App() {
             ...d.extraSlots,
             [bookingData.period]: false,
           };
-          return updateDayStatus({ ...d, periods: updatedPeriods, extraSlots: updatedExtra });
+          const updatedDay = updateDayStatus({ ...d, periods: updatedPeriods, extraSlots: updatedExtra });
+          saveDayScheduleToSupabase(updatedDay);
+          return updatedDay;
         }
         return d;
       })
@@ -251,6 +329,8 @@ export default function App() {
       })
     );
 
+    updateBookingStatusInSupabase(bookingId, 'confirmado', exactTime);
+
     if (confirmedDayId) {
       setDays((prev) =>
         prev.map((d) => {
@@ -263,7 +343,9 @@ export default function App() {
               ...d.extraSlots,
               [confirmedPeriod]: false,
             };
-            return updateDayStatus({ ...d, periods: updatedPeriods, extraSlots: updatedExtra });
+            const updatedDay = updateDayStatus({ ...d, periods: updatedPeriods, extraSlots: updatedExtra });
+            saveDayScheduleToSupabase(updatedDay);
+            return updatedDay;
           }
           return d;
         })
@@ -291,11 +373,13 @@ export default function App() {
             ...d.extraSlots,
             [period]: !currentExtra,
           };
-          return updateDayStatus({
+          const updatedDay = updateDayStatus({
             ...d,
             extraSlots: updatedExtra,
             isBlocked: false,
           });
+          saveDayScheduleToSupabase(updatedDay);
+          return updatedDay;
         }
         return d;
       })
@@ -317,6 +401,7 @@ export default function App() {
     setBookings((prev) =>
       prev.map((bk) => (bk.id === bookingId ? { ...bk, status } : bk))
     );
+    updateBookingStatusInSupabase(bookingId, status);
   };
 
   // Admin Handler: Toggle Period Block
@@ -328,7 +413,9 @@ export default function App() {
             ...d.periods,
             [period]: !d.periods[period],
           };
-          return updateDayStatus({ ...d, periods: updatedPeriods, isBlocked: false });
+          const updatedDay = updateDayStatus({ ...d, periods: updatedPeriods, isBlocked: false });
+          saveDayScheduleToSupabase(updatedDay);
+          return updatedDay;
         }
         return d;
       })
@@ -341,13 +428,15 @@ export default function App() {
       prev.map((d) => {
         if (d.id === dayId) {
           const isNowBlocked = !d.isBlocked;
-          return updateDayStatus({
+          const updatedDay = updateDayStatus({
             ...d,
             isBlocked: isNowBlocked,
             periods: isNowBlocked
               ? { manha: false, tarde: false, noite: false }
               : { manha: true, tarde: true, noite: true },
           });
+          saveDayScheduleToSupabase(updatedDay);
+          return updatedDay;
         }
         return d;
       })
@@ -361,6 +450,19 @@ export default function App() {
       id: `hist-${Date.now()}`,
     };
     setHistory((prev) => [newHistoryItem, ...prev]);
+    saveClientToSupabase(newHistoryItem);
+  };
+
+  // Admin Handler: Delete client history
+  const handleDeleteClientHistory = (id: string) => {
+    setHistory((prev) => prev.filter((item) => item.id !== id));
+    deleteClientFromSupabase(id);
+  };
+
+  // Admin Handler: Delete client group
+  const handleDeleteClientGroup = (clientName: string) => {
+    setHistory((prev) => prev.filter((item) => item.clientName.trim().toLowerCase() !== clientName.trim().toLowerCase()));
+    deleteClientGroupFromSupabase(clientName);
   };
 
   // Admin Handler: Add portfolio item
@@ -600,6 +702,8 @@ export default function App() {
               onToggleDayBlock={handleToggleDayBlock}
               onToggleExtraSlot={handleToggleExtraSlot}
               onAddClientHistory={handleAddClientHistory}
+              onDeleteClientHistory={handleDeleteClientHistory}
+              onDeleteClientGroup={handleDeleteClientGroup}
               onAddPortfolioItem={handleAddPortfolioItem}
               onUpdatePortfolioItem={handleUpdatePortfolioItem}
               onDeletePortfolioItem={handleDeletePortfolioItem}
