@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Crown, MapPin, Phone, Instagram, Clock, Scissors, Award, Sparkles, Edit3, Save, Plus, X, Trash2, Calendar, Palette, Sun, Moon, CheckCircle2 } from 'lucide-react';
+import { Crown, MapPin, Phone, Instagram, Clock, Scissors, Award, Sparkles, Edit3, Save, Plus, X, Trash2, Calendar, Palette, Sun, Moon, CheckCircle2, Camera, Upload } from 'lucide-react';
 import { ServiceItem, AdsonProfileInfo, ThemeMode } from '../types';
-import { SALAO_NAME } from '../data/mockData';
+import { SALAO_NAME, INITIAL_PROFILE_INFO } from '../data/mockData';
 
 interface ProfileViewProps {
   profileInfo: AdsonProfileInfo;
@@ -28,23 +28,38 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 }) => {
   // Bio/Info Editing Modal State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [editBio, setEditBio] = useState(profileInfo.bio);
-  const [editTitle, setEditTitle] = useState(profileInfo.title);
-  const [editExpYears, setEditExpYears] = useState(profileInfo.experienceYears);
-  const [editPhone, setEditPhone] = useState(profileInfo.phone);
-  const [editWhatsapp, setEditWhatsapp] = useState(profileInfo.whatsapp);
-  const [editAddress, setEditAddress] = useState(profileInfo.address);
-  const [editHours, setEditHours] = useState(profileInfo.operatingHours);
+  const [editAvatarUrl, setEditAvatarUrl] = useState(profileInfo.avatarUrl || '');
+  const [editBio, setEditBio] = useState(profileInfo.bio || '');
+  const [editTitle, setEditTitle] = useState(profileInfo.title || '');
+  const [editExpYears, setEditExpYears] = useState(profileInfo.experienceYears || 0);
+  const [editPhone, setEditPhone] = useState(profileInfo.phone || '');
+  const [editWhatsapp, setEditWhatsapp] = useState(profileInfo.whatsapp || '');
+  const [editAddress, setEditAddress] = useState(profileInfo.address || '');
+  const [editHours, setEditHours] = useState(profileInfo.operatingHours || '');
 
   useEffect(() => {
-    setEditBio(profileInfo.bio);
-    setEditTitle(profileInfo.title);
-    setEditExpYears(profileInfo.experienceYears);
-    setEditPhone(profileInfo.phone);
-    setEditWhatsapp(profileInfo.whatsapp);
-    setEditAddress(profileInfo.address);
-    setEditHours(profileInfo.operatingHours);
+    setEditAvatarUrl(profileInfo.avatarUrl || '');
+    setEditBio(profileInfo.bio || '');
+    setEditTitle(profileInfo.title || '');
+    setEditExpYears(profileInfo.experienceYears || 0);
+    setEditPhone(profileInfo.phone || '');
+    setEditWhatsapp(profileInfo.whatsapp || '');
+    setEditAddress(profileInfo.address || '');
+    setEditHours(profileInfo.operatingHours || '');
   }, [profileInfo]);
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setEditAvatarUrl(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Add Service Modal State
   const [isAddingService, setIsAddingService] = useState(false);
@@ -70,6 +85,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     if (onUpdateProfileInfo) {
       onUpdateProfileInfo({
         ...profileInfo,
+        avatarUrl: editAvatarUrl,
         title: editTitle,
         bio: editBio,
         experienceYears: Number(editExpYears),
@@ -105,15 +121,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       <div className="dark-card-bg rounded-3xl border border-[#D4AF37]/40 p-5 shadow-2xl text-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-36 h-36 bg-[#D4AF37]/10 rounded-full blur-3xl" />
 
-        <div className="w-22 h-22 mx-auto rounded-full bg-[#1A1A1A] border-2 border-[#D4AF37] p-1 shadow-[0_0_20px_rgba(212,175,55,0.4)] relative mb-3">
+        <div className="w-22 h-22 mx-auto rounded-full bg-[#1A1A1A] border-2 border-[#D4AF37] p-1 shadow-[0_0_20px_rgba(212,175,55,0.4)] relative mb-3 group">
           <img
-            src={profileInfo.avatarUrl}
+            src={profileInfo.avatarUrl || INITIAL_PROFILE_INFO.avatarUrl}
             alt={profileInfo.name}
             className="w-full h-full object-cover rounded-full"
           />
-          <div className="absolute -bottom-1 -right-1 bg-[#D4AF37] text-black p-1 rounded-full shadow-md">
-            <Award className="w-4 h-4 text-black" />
-          </div>
+          {isAdmin ? (
+            <button
+              onClick={() => setIsEditingProfile(true)}
+              className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#D4AF37]"
+              title="Trocar Foto de Perfil"
+            >
+              <Camera className="w-6 h-6" />
+              <span className="text-[9px] font-extrabold uppercase mt-0.5">Trocar</span>
+            </button>
+          ) : (
+            <div className="absolute -bottom-1 -right-1 bg-[#D4AF37] text-black p-1 rounded-full shadow-md">
+              <Award className="w-4 h-4 text-black" />
+            </div>
+          )}
         </div>
 
         <h2 className="font-cinzel font-bold text-xl text-slate-100 gold-text-gradient">
@@ -338,6 +365,58 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <button onClick={() => setIsEditingProfile(false)} type="button" className="text-gray-400">
                 <X className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* Foto de Perfil */}
+            <div className="bg-[#1A1A1A] p-3 rounded-2xl border border-[#D4AF37]/30 flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-black border border-[#D4AF37] p-0.5 shrink-0 overflow-hidden relative">
+                <img
+                  src={editAvatarUrl || INITIAL_PROFILE_INFO.avatarUrl}
+                  alt="Foto de Perfil"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+              <div className="flex-1 space-y-1.5">
+                <label className="text-[10px] uppercase font-bold text-amber-400 block">
+                  Foto de Perfil do Adson
+                </label>
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="modal-profile-avatar-upload"
+                    className="px-2.5 py-1 rounded-xl bg-[#252525] border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-bold cursor-pointer hover:bg-[#303030] transition-all flex items-center gap-1 active:scale-95"
+                  >
+                    <Upload className="w-3 h-3" />
+                    <span>Escolher Foto</span>
+                  </label>
+                  <input
+                    id="modal-profile-avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                  {editAvatarUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setEditAvatarUrl('')}
+                      className="text-[10px] text-rose-400 hover:underline"
+                    >
+                      Remover
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Ou Link/URL da Imagem</label>
+              <input
+                type="text"
+                placeholder="https://..."
+                value={editAvatarUrl}
+                onChange={(e) => setEditAvatarUrl(e.target.value)}
+                className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:border-[#D4AF37] outline-none placeholder:text-gray-600"
+              />
             </div>
 
             <div>

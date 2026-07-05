@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Crown, Sparkles, LogOut, Bell, Sun, Moon, RefreshCw } from 'lucide-react';
+import { Crown, Sparkles, LogOut, Bell, Sun, Moon, RefreshCw, Palette } from 'lucide-react';
 import { SALAO_NAME } from '../data/mockData';
 import { ThemeMode } from '../types';
 
@@ -13,6 +13,7 @@ interface HeaderProps {
   onTripleClickTitle?: () => void;
   themeMode?: ThemeMode;
   onToggleTheme?: () => void;
+  onOpenDesignOptions?: () => void;
   onRefreshData?: () => Promise<void>;
   isRefreshingData?: boolean;
 }
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   onTripleClickTitle,
   themeMode = 'preto-luxo',
   onToggleTheme,
+  onOpenDesignOptions,
   onRefreshData,
   isRefreshingData = false,
 }) => {
@@ -86,6 +88,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Design Options Button */}
+          {onOpenDesignOptions && (
+            <button
+              onClick={onOpenDesignOptions}
+              className="p-2 rounded-full bg-[#1A1A1A] border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all active:scale-95 shadow-[0_0_10px_rgba(212,175,55,0.2)]"
+              title="Opções de Design e Temas Nobres"
+            >
+              <Palette className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Theme Toggle Button ("Preto Luxo" vs "Branco Luxo") */}
           {onToggleTheme && (
             <button

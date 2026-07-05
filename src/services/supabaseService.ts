@@ -5,6 +5,42 @@ import { AdsonProfileInfo, DaySchedule, BookingRequest, ClientHistoryItem, AppNo
 // 1. CONFIGURAÇÕES & PERFIL DO ADSON
 // ==========================================
 
+// Generic helper to safely write to Supabase when table schemas might miss optional columns
+async function safeSupabaseWrite(
+  tableName: string,
+  initialPayload: Record<string, any>,
+  method: 'upsert' | 'insert' = 'upsert'
+): Promise<boolean> {
+  let payload = { ...initialPayload };
+  let attempts = 0;
+  const maxAttempts = 6;
+
+  while (attempts < maxAttempts) {
+    attempts++;
+    const { error } = method === 'upsert'
+      ? await supabase.from(tableName).upsert(payload)
+      : await supabase.from(tableName).insert(payload);
+
+    if (!error) {
+      return true;
+    }
+
+    if (error.message && error.message.includes("Could not find the '")) {
+      const match = error.message.match(/Could not find the '([^']+)' column/);
+      if (match && match[1]) {
+        const missingColumn = match[1];
+        console.warn(`[Supabase] Column '${missingColumn}' not found in '${tableName}'. Retrying without it...`);
+        delete payload[missingColumn];
+        continue;
+      }
+    }
+
+    console.error(`[Supabase] Error writing to '${tableName}':`, error.message);
+    return false;
+  }
+  return false;
+}
+
 export async function fetchProfileInfoFromSupabase(): Promise<AdsonProfileInfo | null> {
   if (!isSupabaseConfigured()) return null;
 
@@ -21,16 +57,16 @@ export async function fetchProfileInfoFromSupabase(): Promise<AdsonProfileInfo |
     }
 
     return {
-      name: data.name,
-      title: data.title,
-      bio: data.bio,
-      experienceYears: data.experience_years,
-      phone: data.phone,
-      whatsapp: data.whatsapp,
-      instagram: data.instagram,
-      address: data.address,
-      operatingHours: data.operating_hours,
-      avatarUrl: data.avatar_url,
+      name: data.name || '',
+      title: data.title || '',
+      bio: data.bio || '',
+      experienceYears: data.experience_years ?? 10,
+      phone: data.phone || '',
+      whatsapp: data.whatsapp || '',
+      instagram: data.instagram || '',
+      address: data.address || '',
+      operatingHours: data.operating_hours || '',
+      avatarUrl: data.avatar_url || '',
     };
   } catch (err) {
     console.error('[Supabase] Exception fetching profile info:', err);
@@ -41,31 +77,22 @@ export async function fetchProfileInfoFromSupabase(): Promise<AdsonProfileInfo |
 export async function saveProfileInfoToSupabase(info: AdsonProfileInfo): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
 
-  try {
-    const { error } = await supabase.from('configuracoes').upsert({
-      id: 'saloon_config',
-      name: info.name,
-      title: info.title,
-      bio: info.bio,
-      experience_years: info.experienceYears,
-      phone: info.phone,
-      whatsapp: info.whatsapp,
-      instagram: info.instagram,
-      address: info.address,
-      operating_hours: info.operatingHours,
-      avatar_url: info.avatarUrl,
-      updated_at: new Date().toISOString(),
-    });
+  const payload: Record<string, any> = {
+    id: 'saloon_config',
+    name: info.name,
+    title: info.title,
+    bio: info.bio,
+    experience_years: info.experienceYears,
+    phone: info.phone,
+    whatsapp: info.whatsapp,
+    instagram: info.instagram,
+    address: info.address,
+    operating_hours: info.operatingHours,
+    avatar_url: info.avatarUrl,
+    updated_at: new Date().toISOString(),
+  };
 
-    if (error) {
-      console.error('[Supabase] Error saving profile info:', error.message);
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error('[Supabase] Exception saving profile info:', err);
-    return false;
-  }
+  return safeSupabaseWrite('configuracoes', payload, 'upsert');
 }
 
 // ==========================================
@@ -105,29 +132,20 @@ export async function fetchDaysFromSupabase(): Promise<DaySchedule[] | null> {
 export async function saveDayScheduleToSupabase(day: DaySchedule): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
 
-  try {
-    const { error } = await supabase.from('dias_agenda').upsert({
-      id: day.id,
-      day_of_week: day.dayOfWeek,
-      day_number: day.dayNumber,
-      date_formatted: day.dateFormatted,
-      periods: day.periods,
-      status: day.status,
-      status_label: day.statusLabel,
-      is_blocked: day.isBlocked || false,
-      extra_slots: day.extraSlots || { manha: false, tarde: false, noite: false },
-      updated_at: new Date().toISOString(),
-    });
+  const payload: Record<string, any> = {
+    id: day.id,
+    day_of_week: day.dayOfWeek,
+    day_number: day.dayNumber,
+    date_formatted: day.dateFormatted,
+    periods: day.periods,
+    status: day.status,
+    status_label: day.statusLabel,
+    is_blocked: day.isBlocked || false,
+    extra_slots: day.extraSlots || { manha: false, tarde: false, noite: false },
+    updated_at: new Date().toISOString(),
+  };
 
-    if (error) {
-      console.error('[Supabase] Error saving day schedule:', error.message);
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error('[Supabase] Exception saving day schedule:', err);
-    return false;
-  }
+  return safeSupabaseWrite('dias_agenda', payload, 'upsert');
 }
 
 export async function saveBulkDaysToSupabase(days: DaySchedule[]): Promise<boolean> {

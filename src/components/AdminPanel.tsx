@@ -33,7 +33,7 @@ import {
   Pencil
 } from 'lucide-react';
 import { BookingRequest, DaySchedule, ClientHistoryItem, Period, PortfolioItem, ServiceItem, AdsonProfileInfo } from '../types';
-import { ADSON_WHATSAPP_NUMBER } from '../data/mockData';
+import { ADSON_WHATSAPP_NUMBER, INITIAL_PROFILE_INFO } from '../data/mockData';
 import { formatBRLCurrency } from '../utils/formatters';
 import { PortfolioModal } from './PortfolioModal';
 import { DatePaginationControls } from './DatePaginationControls';
@@ -272,14 +272,41 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   // Account Settings Form State
-  const [accName, setAccName] = useState(profileInfo.name);
-  const [accTitle, setAccTitle] = useState(profileInfo.title);
-  const [accBio, setAccBio] = useState(profileInfo.bio);
-  const [accPhone, setAccPhone] = useState(profileInfo.phone);
-  const [accWhatsapp, setAccWhatsapp] = useState(profileInfo.whatsapp);
-  const [accInstagram, setAccInstagram] = useState(profileInfo.instagram);
-  const [accAddress, setAccAddress] = useState(profileInfo.address);
-  const [accHours, setAccHours] = useState(profileInfo.operatingHours);
+  const [accName, setAccName] = useState(profileInfo.name || '');
+  const [accTitle, setAccTitle] = useState(profileInfo.title || '');
+  const [accBio, setAccBio] = useState(profileInfo.bio || '');
+  const [accPhone, setAccPhone] = useState(profileInfo.phone || '');
+  const [accWhatsapp, setAccWhatsapp] = useState(profileInfo.whatsapp || '');
+  const [accInstagram, setAccInstagram] = useState(profileInfo.instagram || '');
+  const [accAddress, setAccAddress] = useState(profileInfo.address || '');
+  const [accHours, setAccHours] = useState(profileInfo.operatingHours || '');
+  const [accAvatarUrl, setAccAvatarUrl] = useState(profileInfo.avatarUrl || '');
+
+  React.useEffect(() => {
+    setAccName(profileInfo.name || '');
+    setAccTitle(profileInfo.title || '');
+    setAccBio(profileInfo.bio || '');
+    setAccPhone(profileInfo.phone || '');
+    setAccWhatsapp(profileInfo.whatsapp || '');
+    setAccInstagram(profileInfo.instagram || '');
+    setAccAddress(profileInfo.address || '');
+    setAccHours(profileInfo.operatingHours || '');
+    setAccAvatarUrl(profileInfo.avatarUrl || '');
+  }, [profileInfo]);
+
+  const handleAvatarFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setAccAvatarUrl(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const [settingsSuccessMsg, setSettingsSuccessMsg] = useState(false);
 
   // Filter Bookings
@@ -370,6 +397,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       instagram: accInstagram,
       address: accAddress,
       operatingHours: accHours,
+      avatarUrl: accAvatarUrl,
     });
     setSettingsSuccessMsg(true);
     setTimeout(() => setSettingsSuccessMsg(false), 3000);
@@ -568,13 +596,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </span>
                     <div className="grid grid-cols-2 gap-2">
                       {/* Inspiração */}
-                      {(bk.inspirationImageUrl || bk.referenceImageUrl) && (
+                      {Boolean(bk.inspirationImageUrl || bk.referenceImageUrl) && (
                         <div className="bg-[#121212] p-2 rounded-lg border border-amber-500/40 flex flex-col items-center gap-1.5 text-center">
                           <span className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider bg-amber-950/90 px-2 py-0.5 rounded border border-amber-500/40 w-full truncate">
                             ✨ [Inspiração]
                           </span>
                           <img
-                            src={bk.inspirationImageUrl || bk.referenceImageUrl}
+                            src={(bk.inspirationImageUrl || bk.referenceImageUrl) || undefined}
                             alt="Foto Inspiração"
                             className="w-full h-24 rounded-lg object-cover border border-[#D4AF37]/40 cursor-pointer hover:scale-105 transition-transform"
                             onClick={() => window.open(bk.inspirationImageUrl || bk.referenceImageUrl, '_blank')}
@@ -583,13 +611,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       )}
 
                       {/* Cabelo Atual */}
-                      {bk.currentHairImageUrl && (
+                      {Boolean(bk.currentHairImageUrl) && (
                         <div className="bg-[#121212] p-2 rounded-lg border border-emerald-500/40 flex flex-col items-center gap-1.5 text-center">
                           <span className="text-[10px] font-extrabold text-emerald-300 uppercase tracking-wider bg-emerald-950/90 px-2 py-0.5 rounded border border-emerald-500/40 w-full truncate">
                             💇‍♀️ [Cabelo Atual]
                           </span>
                           <img
-                            src={bk.currentHairImageUrl}
+                            src={bk.currentHairImageUrl || undefined}
                             alt="Foto Cabelo Atual"
                             className="w-full h-24 rounded-lg object-cover border border-emerald-500/40 cursor-pointer hover:scale-105 transition-transform"
                             onClick={() => window.open(bk.currentHairImageUrl, '_blank')}
@@ -815,7 +843,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           📸 Mídias Anexadas no Histórico do Perfil:
                         </span>
                         <div className="grid grid-cols-2 gap-2">
-                          {inspiration && (
+                          {inspiration && inspiration.trim() !== '' && (
                             <div className="flex flex-col items-center gap-1 bg-[#1A1A1A] p-1.5 rounded-lg border border-amber-500/30">
                               <span className="text-[9px] font-extrabold text-amber-300">
                                 [Inspiração]
@@ -828,7 +856,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               />
                             </div>
                           )}
-                          {currentHair && (
+                          {currentHair && currentHair.trim() !== '' && (
                             <div className="flex flex-col items-center gap-1 bg-[#1A1A1A] p-1.5 rounded-lg border border-emerald-500/30">
                               <span className="text-[9px] font-extrabold text-emerald-300">
                                 [Cabelo Atual]
@@ -1017,10 +1045,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 className="dark-card-bg rounded-2xl border border-[#2A2A2A] overflow-hidden shadow-md group relative"
               >
                 <div className="relative w-full h-32 bg-[#1A1A1A]">
-                  {item.mediaType === 'video' || item.videoUrl ? (
-                    <video src={item.videoUrl} poster={item.imageUrl} className="w-full h-full object-cover" />
+                  {item.mediaType === 'video' || (item.videoUrl && item.videoUrl.trim() !== '') ? (
+                    <video src={item.videoUrl || undefined} poster={item.imageUrl || undefined} className="w-full h-full object-cover" />
                   ) : (
-                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                    <img src={item.imageUrl || undefined} alt={item.title} className="w-full h-full object-cover" />
                   )}
 
                   <div className="absolute top-2 right-2 flex items-center gap-1">
@@ -1071,6 +1099,66 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <Check className="w-4 h-4" /> Atualizado!
               </span>
             )}
+          </div>
+
+          {/* Foto de Perfil do Adson */}
+          <div className="bg-[#121212] p-4 rounded-2xl border border-[#D4AF37]/30 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="relative w-20 h-20 rounded-full bg-[#1A1A1A] border-2 border-[#D4AF37] p-1 shadow-[0_0_15px_rgba(212,175,55,0.3)] shrink-0 group">
+              <img
+                src={accAvatarUrl || INITIAL_PROFILE_INFO.avatarUrl}
+                alt="Foto de Perfil do Adson"
+                className="w-full h-full object-cover rounded-full"
+              />
+              <label
+                htmlFor="admin-avatar-file-input"
+                className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#D4AF37]"
+                title="Clique para alterar a foto"
+              >
+                <Camera className="w-5 h-5" />
+                <span className="text-[9px] font-extrabold uppercase mt-0.5">Trocar</span>
+              </label>
+            </div>
+
+            <div className="flex-1 space-y-2 w-full">
+              <label className="text-[10px] uppercase font-bold text-amber-400 block tracking-wider">
+                Foto de Perfil do Adson (Salão Reis)
+              </label>
+
+              <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                <label
+                  htmlFor="admin-avatar-file-input"
+                  className="px-3 py-1.5 rounded-xl bg-[#1A1A1A] hover:bg-[#252525] border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-bold cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shadow"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Escolher da Galeria</span>
+                </label>
+                <input
+                  id="admin-avatar-file-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarFileUpload}
+                  className="hidden"
+                />
+
+                {accAvatarUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setAccAvatarUrl('')}
+                    className="px-2.5 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-300 text-xs font-semibold transition-all"
+                  >
+                    Restaurar Padrão
+                  </button>
+                )}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Ou cole o link/URL da imagem (ex: https://...)"
+                value={accAvatarUrl}
+                onChange={(e) => setAccAvatarUrl(e.target.value)}
+                className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:border-[#D4AF37] outline-none placeholder:text-gray-600"
+              />
+            </div>
           </div>
 
           <div>
@@ -1271,21 +1359,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   📸 Mídias a serem vinculadas ao perfil:
                 </span>
                 <div className="grid grid-cols-2 gap-2">
-                  {(saveClientModalBooking.inspirationImageUrl || saveClientModalBooking.referenceImageUrl) && (
+                  {Boolean(saveClientModalBooking.inspirationImageUrl || saveClientModalBooking.referenceImageUrl) && (
                     <div className="bg-[#121212] p-1.5 rounded-lg border border-amber-500/40 text-center">
                       <span className="text-[9px] font-extrabold text-amber-300 block mb-1">[Inspiração]</span>
                       <img
-                        src={saveClientModalBooking.inspirationImageUrl || saveClientModalBooking.referenceImageUrl}
+                        src={(saveClientModalBooking.inspirationImageUrl || saveClientModalBooking.referenceImageUrl) || undefined}
                         alt="Inspiração"
                         className="w-full h-16 object-cover rounded border border-[#D4AF37]/30"
                       />
                     </div>
                   )}
-                  {saveClientModalBooking.currentHairImageUrl && (
+                  {Boolean(saveClientModalBooking.currentHairImageUrl) && (
                     <div className="bg-[#121212] p-1.5 rounded-lg border border-emerald-500/40 text-center">
                       <span className="text-[9px] font-extrabold text-emerald-300 block mb-1">[Cabelo Atual]</span>
                       <img
-                        src={saveClientModalBooking.currentHairImageUrl}
+                        src={saveClientModalBooking.currentHairImageUrl || undefined}
                         alt="Cabelo Atual"
                         className="w-full h-16 object-cover rounded border border-emerald-500/30"
                       />
@@ -1369,7 +1457,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     📸 Mídias Anexadas da Cliente:
                   </span>
                   <div className="grid grid-cols-2 gap-2">
-                    {inspiration && (
+                    {inspiration && inspiration.trim() !== '' && (
                       <div className="bg-[#121212] p-2 rounded-xl border border-amber-500/30 text-center space-y-1">
                         <span className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block">
                           [Inspiração]
@@ -1382,7 +1470,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         />
                       </div>
                     )}
-                    {currentHair && (
+                    {currentHair && currentHair.trim() !== '' && (
                       <div className="bg-[#121212] p-2 rounded-xl border border-emerald-500/30 text-center space-y-1">
                         <span className="text-[10px] font-extrabold text-emerald-300 uppercase tracking-wider block">
                           [Cabelo Atual]

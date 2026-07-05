@@ -2,7 +2,7 @@ export type Period = 'manha' | 'tarde' | 'noite';
 
 export type StatusColor = 'verde' | 'amarelo' | 'vermelho';
 
-export type ThemeMode = 'preto-luxo' | 'branco-luxo';
+export type ThemeMode = 'preto-luxo' | 'branco-luxo' | 'ametista-real' | 'esmeralda-imperial' | 'safira-midnight';
 
 export interface DaySchedule {
   id: string; // e.g. '2026-07-07'

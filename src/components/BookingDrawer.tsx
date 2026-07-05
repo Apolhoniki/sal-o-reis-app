@@ -345,7 +345,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
               <input
                 type="text"
                 placeholder="Seu nome (ex: Maria Silva)"
-                value={clientName}
+                value={clientName || ''}
                 onChange={(e) => setClientName(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-[#d4af37]"
               />
@@ -356,7 +356,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
               <input
                 type="tel"
                 placeholder="Seu WhatsApp (ex: 11 99999-8888)"
-                value={clientPhone}
+                value={clientPhone || ''}
                 onChange={(e) => setClientPhone(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-[#d4af37]"
               />
@@ -370,7 +370,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
               <textarea
                 rows={2}
                 placeholder="Conte um pouco sobre você ou seu cabelo, se quiser (Ex: 'Sou a irmã da Maria, quero retocar a progressiva')"
-                value={clientDescription}
+                value={clientDescription || ''}
                 onChange={(e) => setClientDescription(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-[#d4af37] resize-none"
               />
@@ -401,7 +401,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
               Escolha uma foto do portfólio do app ou envie a imagem do estilo que você deseja alcançar.
             </p>
 
-            {inspirationPhoto ? (
+            {inspirationPhoto && inspirationPhoto.trim() !== '' ? (
               <div className="relative w-full h-28 rounded-xl overflow-hidden border border-amber-500/50 group bg-black/40">
                 <img src={inspirationPhoto} alt="Foto inspiração" className="w-full h-full object-cover" />
                 <div className="absolute top-2 left-2 bg-amber-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow">
@@ -475,7 +475,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
               Tire uma foto na hora ou anexe uma imagem mostrando como seu cabelo está hoje para ajuda na avaliação técnica do Adson.
             </p>
 
-            {currentHairPhoto ? (
+            {currentHairPhoto && currentHairPhoto.trim() !== '' ? (
               <div className="relative w-full h-28 rounded-xl overflow-hidden border border-emerald-500/50 group bg-black/40">
                 <img src={currentHairPhoto} alt="Cabelo atual" className="w-full h-full object-cover" />
                 <div className="absolute top-2 left-2 bg-emerald-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow">

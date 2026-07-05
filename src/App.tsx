@@ -43,6 +43,7 @@ import {
 import { Header } from './components/Header';
 import { DayCard } from './components/DayCard';
 import { BookingDrawer } from './components/BookingDrawer';
+import { DesignOptionsModal } from './components/DesignOptionsModal';
 import { PortfolioFeed } from './components/PortfolioFeed';
 import { AdminPanel } from './components/AdminPanel';
 import { NotificationCenter } from './components/NotificationCenter';
@@ -70,30 +71,63 @@ export default function App() {
   });
 
   const [isRefreshingData, setIsRefreshingData] = useState(false);
+  const [isDesignOptionsOpen, setIsDesignOptionsOpen] = useState(false);
 
   useEffect(() => {
+    const allThemeClasses = [
+      'dark',
+      'theme-preto-luxo',
+      'theme-branco-luxo',
+      'theme-ametista-real',
+      'theme-esmeralda-imperial',
+      'theme-safira-midnight',
+      'theme-branco',
+      'theme-preto'
+    ];
+    allThemeClasses.forEach((cls) => {
+      document.body.classList.remove(cls);
+      document.documentElement.classList.remove(cls);
+    });
+
+    document.body.classList.add(`theme-${themeMode}`);
+    document.documentElement.classList.add(`theme-${themeMode}`);
+
     if (themeMode === 'branco-luxo') {
-      document.body.classList.add('theme-branco-luxo');
-      document.body.classList.remove('theme-preto-luxo');
-      document.documentElement.classList.add('theme-branco');
-      document.documentElement.classList.remove('theme-preto');
+      document.body.classList.add('theme-branco-luxo', 'theme-branco');
+      document.documentElement.classList.add('theme-branco-luxo', 'theme-branco');
+      document.body.classList.remove('dark');
+      document.documentElement.classList.remove('dark');
     } else {
-      document.body.classList.add('theme-preto-luxo');
-      document.body.classList.remove('theme-branco-luxo');
-      document.documentElement.classList.add('theme-preto');
-      document.documentElement.classList.remove('theme-branco');
+      document.body.classList.add('dark');
+      document.documentElement.classList.add('dark');
+      if (themeMode === 'preto-luxo') {
+        document.body.classList.add('theme-preto-luxo');
+        document.documentElement.classList.add('theme-preto-luxo');
+      }
     }
   }, [themeMode]);
 
-  const handleToggleTheme = () => {
-    const nextTheme: ThemeMode = themeMode === 'preto-luxo' ? 'branco-luxo' : 'preto-luxo';
-    setThemeMode(nextTheme);
+  const handleSelectTheme = (newTheme: ThemeMode) => {
+    setThemeMode(newTheme);
     try {
-      localStorage.setItem('salao_reis_theme_mode', nextTheme);
-      localStorage.setItem('salao_reis_theme', nextTheme === 'branco-luxo' ? 'branco' : 'preto');
+      localStorage.setItem('salao_reis_theme_mode', newTheme);
+      localStorage.setItem('salao_reis_theme', newTheme === 'branco-luxo' ? 'branco' : 'preto');
     } catch (e) {
       console.error('Error saving theme to localStorage:', e);
     }
+  };
+
+  const handleToggleTheme = () => {
+    const themeCycle: ThemeMode[] = [
+      'preto-luxo',
+      'branco-luxo',
+      'ametista-real',
+      'esmeralda-imperial',
+      'safira-midnight'
+    ];
+    const currentIndex = themeCycle.indexOf(themeMode);
+    const nextIndex = (currentIndex + 1) % themeCycle.length;
+    handleSelectTheme(themeCycle[nextIndex]);
   };
 
   // App State
@@ -625,6 +659,7 @@ export default function App() {
             onTripleClickTitle={() => setIsPinModalOpen(true)}
             themeMode={themeMode}
             onToggleTheme={handleToggleTheme}
+            onOpenDesignOptions={() => setIsDesignOptionsOpen(true)}
             onRefreshData={handleRefreshData}
             isRefreshingData={isRefreshingData}
           />
@@ -679,7 +714,7 @@ export default function App() {
               </div>
 
               {/* Status Semáforo Legend */}
-              <div className="flex items-center justify-around py-2 px-3 bg-slate-950/80 rounded-xl border border-slate-800 text-[11px] font-semibold text-slate-300">
+              <div className="flex items-center justify-around py-2.5 px-3 dark-inner-card rounded-xl border border-[#D4AF37]/30 text-[11px] font-semibold text-slate-200">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 green-status-glow" />
                   <span>Disponível</span>
@@ -851,6 +886,16 @@ export default function App() {
             setActiveTab('admin');
             setIsPinModalOpen(false);
           }}
+        />
+
+        {/* Design Options & Luxury Themes Modal */}
+        <DesignOptionsModal
+          isOpen={isDesignOptionsOpen}
+          onClose={() => setIsDesignOptionsOpen(false)}
+          currentTheme={themeMode}
+          onSelectTheme={handleSelectTheme}
+          isSmartphoneFrame={isSmartphoneFrame}
+          onToggleFrame={() => setIsSmartphoneFrame(!isSmartphoneFrame)}
         />
 
         {/* PWA Mobile Installation Prompt Banner */}

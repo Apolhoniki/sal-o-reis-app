@@ -111,17 +111,17 @@ export const PortfolioFeed: React.FC<PortfolioFeedProps> = ({
           >
             {/* Image or Video Box */}
             <div className="relative w-full aspect-[4/3] bg-slate-900 overflow-hidden">
-              {item.mediaType === 'video' || item.videoUrl ? (
+              {item.mediaType === 'video' || (item.videoUrl && item.videoUrl.trim() !== '') ? (
                 <video
-                  src={item.videoUrl}
-                  poster={item.imageUrl}
+                  src={item.videoUrl || item.imageUrl || undefined}
+                  poster={item.imageUrl || undefined}
                   controls
                   playsInline
                   className="w-full h-full object-cover"
                 />
               ) : (
                 <img
-                  src={item.imageUrl}
+                  src={item.imageUrl || undefined}
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"

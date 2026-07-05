@@ -181,12 +181,12 @@ export const PortfolioModal: React.FC<PortfolioModalProps> = ({
 
           {/* Media Picker Card */}
           <div className="bg-[#1A1A1A] border-2 border-dashed border-[#D4AF37]/40 rounded-2xl p-4 text-center hover:border-[#D4AF37] transition-all relative">
-            {portImageUrl ? (
+            {portImageUrl && portImageUrl.trim() !== '' ? (
               <div className="space-y-2">
                 {portMediaType === 'video' ? (
                   <div className="relative rounded-xl overflow-hidden max-h-40 bg-black flex items-center justify-center">
                     <video
-                      src={portVideoUrl || portImageUrl}
+                      src={(portVideoUrl && portVideoUrl.trim() !== '' ? portVideoUrl : portImageUrl) || undefined}
                       controls
                       className="max-h-40 w-full object-cover rounded-xl"
                     />
@@ -194,7 +194,7 @@ export const PortfolioModal: React.FC<PortfolioModalProps> = ({
                 ) : (
                   <div className="relative rounded-xl overflow-hidden max-h-40 bg-black flex items-center justify-center">
                     <img
-                      src={portImageUrl}
+                      src={portImageUrl || undefined}
                       alt="Preview"
                       className="max-h-40 w-full object-cover rounded-xl"
                     />

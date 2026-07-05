@@ -88,12 +88,48 @@
   background: #D4AF37;
 }
 
-/* Selected Element Focus-Mode Override */
-div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) {
-  background-color: #ffffff !important;
-  border: 1.5px solid #D4AF37 !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15) !important;
+/* =========================================================
+   ESTILO "PRETO LUXO" (DEFAULT SOPHISTICATED DARK MODE)
+   ========================================================= */
+.theme-preto-luxo,
+.theme-preto,
+.dark,
+body.theme-preto-luxo,
+body.dark {
+  background-color: #0A0A0A !important;
+  color: #f1f5f9 !important;
+}
+
+.theme-preto-luxo body,
+.theme-preto body,
+.dark body {
+  background-color: #0A0A0A !important;
+  color: #f1f5f9 !important;
+}
+
+.theme-preto-luxo .dark-card-bg,
+.theme-preto .dark-card-bg,
+.dark .dark-card-bg {
+  background-color: #121212 !important;
+  border-color: #2A2A2A !important;
+  color: #f1f5f9 !important;
+}
+
+.theme-preto-luxo .dark-inner-card,
+.theme-preto .dark-inner-card,
+.dark .dark-inner-card {
+  background-color: #1A1A1A !important;
+  border-color: #2A2A2A !important;
+  color: #f1f5f9 !important;
+}
+
+.theme-preto-luxo header,
+.theme-preto-luxo nav,
+.dark header,
+.dark nav {
+  background-color: rgba(18, 18, 18, 0.95) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: #f1f5f9 !important;
 }
 
 /* =========================================================
@@ -123,26 +159,32 @@ body.theme-branco {
   background-color: #FAF8F5 !important;
 }
 
-/* Main Cards & Containers */
+/* Main Cards, Containers, Popups & Modals in Branco Luxo */
 .theme-branco .dark-card-bg,
 .theme-branco-luxo .dark-card-bg,
 .theme-branco .bg-\[\#121212\],
 .theme-branco-luxo .bg-\[\#121212\],
 .theme-branco .bg-\[\#13161f\],
 .theme-branco-luxo .bg-\[\#13161f\],
+.theme-branco .bg-\[\#161616\],
+.theme-branco-luxo .bg-\[\#161616\],
 .theme-branco .bg-\[\#1A1A1A\],
-.theme-branco-luxo .bg-\[\#1A1A1A\] {
+.theme-branco-luxo .bg-\[\#1A1A1A\],
+.theme-branco .bg-\[\#1C1C1C\],
+.theme-branco-luxo .bg-\[\#1C1C1C\],
+.theme-branco .bg-slate-900,
+.theme-branco-luxo .bg-slate-900,
+.theme-branco .bg-slate-950,
+.theme-branco-luxo .bg-slate-950 {
   background-color: #FFFFFF !important;
   border: 1.5px solid #D4AF37 !important;
   color: #2D2419 !important;
   box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-/* Inner Sub-boxes / Quadrados Internos / Buttons */
+/* Inner Sub-boxes / Quadrados Internos / Buttons in Branco Luxo */
 .theme-branco .dark-inner-card,
 .theme-branco-luxo .dark-inner-card,
-.theme-branco .bg-slate-900,
-.theme-branco-luxo .bg-slate-900,
 .theme-branco .bg-slate-900\/40,
 .theme-branco-luxo .bg-slate-900\/40,
 .theme-branco .bg-slate-900\/50,
@@ -161,8 +203,6 @@ body.theme-branco {
 .theme-branco-luxo .bg-slate-800\/80,
 .theme-branco .bg-slate-800\/90,
 .theme-branco-luxo .bg-slate-800\/90,
-.theme-branco .bg-slate-950,
-.theme-branco-luxo .bg-slate-950,
 .theme-branco .bg-\[\#1a1a1a\],
 .theme-branco-luxo .bg-\[\#1a1a1a\],
 .theme-branco .bg-\[\#252525\],
@@ -334,6 +374,111 @@ body.theme-branco {
 .theme-branco-luxo ::-webkit-scrollbar-thumb {
   background: #D4AF37;
   border-radius: 4px;
+}
+
+/* =========================================================
+   ESTILO "AMETISTA REAL" (ROYAL PURPLE & GOLD THEME)
+   ========================================================= */
+.theme-ametista-real,
+body.theme-ametista-real {
+  background-color: #0F0717 !important;
+  color: #F3E8FF !important;
+}
+
+.theme-ametista-real .bg-\[\#0A0A0A\],
+.theme-ametista-real .bg-\[\#090b0e\],
+.theme-ametista-real .bg-\[\#0d0f12\] {
+  background-color: #0F0717 !important;
+}
+
+.theme-ametista-real .dark-card-bg,
+.theme-ametista-real .bg-\[\#121212\],
+.theme-ametista-real .bg-\[\#13161f\] {
+  background-color: #180D26 !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+
+.theme-ametista-real .dark-inner-card,
+.theme-ametista-real .bg-\[\#1a1a1a\],
+.theme-ametista-real .bg-\[\#252525\] {
+  background-color: #231238 !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+}
+
+.theme-ametista-real header,
+.theme-ametista-real nav {
+  background-color: rgba(24, 13, 38, 0.96) !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+}
+
+/* =========================================================
+   ESTILO "ESMERALDA IMPERIAL" (EMERALD GREEN & GOLD THEME)
+   ========================================================= */
+.theme-esmeralda-imperial,
+body.theme-esmeralda-imperial {
+  background-color: #041410 !important;
+  color: #ECFDF5 !important;
+}
+
+.theme-esmeralda-imperial .bg-\[\#0A0A0A\],
+.theme-esmeralda-imperial .bg-\[\#090b0e\],
+.theme-esmeralda-imperial .bg-\[\#0d0f12\] {
+  background-color: #041410 !important;
+}
+
+.theme-esmeralda-imperial .dark-card-bg,
+.theme-esmeralda-imperial .bg-\[\#121212\],
+.theme-esmeralda-imperial .bg-\[\#13161f\] {
+  background-color: #0B211B !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+
+.theme-esmeralda-imperial .dark-inner-card,
+.theme-esmeralda-imperial .bg-\[\#1a1a1a\],
+.theme-esmeralda-imperial .bg-\[\#252525\] {
+  background-color: #12332A !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+}
+
+.theme-esmeralda-imperial header,
+.theme-esmeralda-imperial nav {
+  background-color: rgba(11, 33, 27, 0.96) !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+}
+
+/* =========================================================
+   ESTILO "SAFIRA MIDNIGHT" (MIDNIGHT NAVY & GOLD THEME)
+   ========================================================= */
+.theme-safira-midnight,
+body.theme-safira-midnight {
+  background-color: #070D1A !important;
+  color: #EFF6FF !important;
+}
+
+.theme-safira-midnight .bg-\[\#0A0A0A\],
+.theme-safira-midnight .bg-\[\#090b0e\],
+.theme-safira-midnight .bg-\[\#0d0f12\] {
+  background-color: #070D1A !important;
+}
+
+.theme-safira-midnight .dark-card-bg,
+.theme-safira-midnight .bg-\[\#121212\],
+.theme-safira-midnight .bg-\[\#13161f\] {
+  background-color: #0E182B !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+
+.theme-safira-midnight .dark-inner-card,
+.theme-safira-midnight .bg-\[\#1a1a1a\],
+.theme-safira-midnight .bg-\[\#252525\] {
+  background-color: #15243F !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+}
+
+.theme-safira-midnight header,
+.theme-safira-midnight nav {
+  background-color: rgba(14, 24, 43, 0.96) !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
 }
 
 
