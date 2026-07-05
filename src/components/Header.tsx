@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { Crown, Sparkles, LogOut, Bell } from 'lucide-react';
+import { Crown, Sparkles, LogOut, Bell, Sun, Moon, RefreshCw } from 'lucide-react';
 import { SALAO_NAME } from '../data/mockData';
+import { ThemeMode } from '../types';
 
 interface HeaderProps {
   isAdmin: boolean;
@@ -10,6 +11,10 @@ interface HeaderProps {
   isSmartphoneFrame: boolean;
   onToggleFrame: () => void;
   onTripleClickTitle?: () => void;
+  themeMode?: ThemeMode;
+  onToggleTheme?: () => void;
+  onRefreshData?: () => Promise<void>;
+  isRefreshingData?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +25,10 @@ export const Header: React.FC<HeaderProps> = ({
   isSmartphoneFrame,
   onToggleFrame,
   onTripleClickTitle,
+  themeMode = 'preto-luxo',
+  onToggleTheme,
+  onRefreshData,
+  isRefreshingData = false,
 }) => {
   const clickCountRef = useRef(0);
   const lastClickTimeRef = useRef(0);
@@ -42,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#121212] border-b border-[#2A2A2A] px-4 py-3.5 shadow-2xl">
+    <header className="sticky top-0 z-40 bg-[#121212] border-b border-[#2A2A2A] px-4 py-3.5 shadow-2xl transition-colors">
       <div className="max-w-md mx-auto flex items-center justify-between">
         
         {/* Brand Logo & Name */}
@@ -51,8 +60,13 @@ export const Header: React.FC<HeaderProps> = ({
           className="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition-transform"
           title="Salão Reis - Clique 3x para acesso restrito do profissional"
         >
-          <div className="w-9 h-9 rounded-full bg-[#1a1a1a] border border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.3)] group-hover:border-[#F5E08B] transition-colors">
-            <Crown className="w-5 h-5 text-[#D4AF37] stroke-[2.2]" />
+          <div className="w-9 h-9 rounded-full overflow-hidden bg-[#1a1a1a] border border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.4)] group-hover:border-[#F5E08B] transition-colors">
+            <img
+              src="/icon-192.png?v=2.0"
+              alt="Salão Reis Logo"
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <div>
             <h1 className="font-cinzel text-lg font-bold tracking-[0.2em] text-[#D4AF37] uppercase leading-none group-hover:text-[#F5E08B] transition-colors">
@@ -65,7 +79,40 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Theme Toggle Button ("Preto Luxo" vs "Branco Luxo") */}
+          {onToggleTheme && (
+            <button
+              onClick={onToggleTheme}
+              className={`p-2 rounded-full border transition-all active:scale-95 flex items-center justify-center gap-1.5 ${
+                themeMode === 'branco-luxo'
+                  ? 'bg-amber-100 border-[#D4AF37] text-[#0F172A] hover:bg-amber-200'
+                  : 'bg-[#1A1A1A] border-[#2A2A2A] text-amber-400 hover:border-[#D4AF37]/60'
+              }`}
+              title={themeMode === 'preto-luxo' ? 'Mudar para Tema Branco Luxo' : 'Mudar para Tema Preto Luxo'}
+            >
+              {themeMode === 'preto-luxo' ? (
+                <Moon className="w-4 h-4 text-[#D4AF37]" />
+              ) : (
+                <Sun className="w-4 h-4 text-amber-600 fill-amber-500/20" />
+              )}
+            </button>
+          )}
+
+          {/* Refresh Data Button */}
+          {onRefreshData && (
+            <button
+              onClick={() => onRefreshData()}
+              disabled={isRefreshingData}
+              className={`p-2 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] text-gray-300 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 transition-all active:scale-95 ${
+                isRefreshingData ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              title="Atualizar Agenda em Tempo Real (Supabase)"
+            >
+              <RefreshCw className={`w-4 h-4 text-[#D4AF37] ${isRefreshingData ? 'animate-spin' : ''}`} />
+            </button>
+          )}
+
           {/* Notifications button */}
           <button
             onClick={onOpenNotifications}
@@ -105,3 +152,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

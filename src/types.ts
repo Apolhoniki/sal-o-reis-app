@@ -2,6 +2,8 @@ export type Period = 'manha' | 'tarde' | 'noite';
 
 export type StatusColor = 'verde' | 'amarelo' | 'vermelho';
 
+export type ThemeMode = 'preto-luxo' | 'branco-luxo';
+
 export interface DaySchedule {
   id: string; // e.g. '2026-07-07'
   dayOfWeek: string; // e.g. 'Terça-feira'

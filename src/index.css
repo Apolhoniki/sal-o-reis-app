@@ -88,4 +88,253 @@
   background: #D4AF37;
 }
 
+/* Selected Element Focus-Mode Override */
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) {
+  background-color: #ffffff !important;
+  border: 1.5px solid #D4AF37 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15) !important;
+}
+
+/* =========================================================
+   ESTILO "BRANCO LUXO COM DOURADO" (WHITE LUXURY THEME OVERRIDES)
+   ========================================================= */
+.theme-branco,
+.theme-branco-luxo,
+body.theme-branco-luxo,
+body.theme-branco {
+  background-color: #FAF8F5 !important;
+  color: #2D2419 !important;
+}
+
+.theme-branco body,
+.theme-branco-luxo body {
+  background-color: #FAF8F5 !important;
+  color: #2D2419 !important;
+}
+
+/* Outer Container / Shell Background */
+.theme-branco .bg-\[\#090b0e\],
+.theme-branco-luxo .bg-\[\#090b0e\],
+.theme-branco .bg-\[\#0A0A0A\],
+.theme-branco-luxo .bg-\[\#0A0A0A\],
+.theme-branco .bg-\[\#0d0f12\],
+.theme-branco-luxo .bg-\[\#0d0f12\] {
+  background-color: #FAF8F5 !important;
+}
+
+/* Main Cards & Containers */
+.theme-branco .dark-card-bg,
+.theme-branco-luxo .dark-card-bg,
+.theme-branco .bg-\[\#121212\],
+.theme-branco-luxo .bg-\[\#121212\],
+.theme-branco .bg-\[\#13161f\],
+.theme-branco-luxo .bg-\[\#13161f\],
+.theme-branco .bg-\[\#1A1A1A\],
+.theme-branco-luxo .bg-\[\#1A1A1A\] {
+  background-color: #FFFFFF !important;
+  border: 1.5px solid #D4AF37 !important;
+  color: #2D2419 !important;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Inner Sub-boxes / Quadrados Internos / Buttons */
+.theme-branco .dark-inner-card,
+.theme-branco-luxo .dark-inner-card,
+.theme-branco .bg-slate-900,
+.theme-branco-luxo .bg-slate-900,
+.theme-branco .bg-slate-900\/40,
+.theme-branco-luxo .bg-slate-900\/40,
+.theme-branco .bg-slate-900\/50,
+.theme-branco-luxo .bg-slate-900\/50,
+.theme-branco .bg-slate-900\/60,
+.theme-branco-luxo .bg-slate-900\/60,
+.theme-branco .bg-slate-900\/70,
+.theme-branco-luxo .bg-slate-900\/70,
+.theme-branco .bg-slate-900\/80,
+.theme-branco-luxo .bg-slate-900\/80,
+.theme-branco .bg-slate-900\/90,
+.theme-branco-luxo .bg-slate-900\/90,
+.theme-branco .bg-slate-800,
+.theme-branco-luxo .bg-slate-800,
+.theme-branco .bg-slate-800\/80,
+.theme-branco-luxo .bg-slate-800\/80,
+.theme-branco .bg-slate-800\/90,
+.theme-branco-luxo .bg-slate-800\/90,
+.theme-branco .bg-slate-950,
+.theme-branco-luxo .bg-slate-950,
+.theme-branco .bg-\[\#1a1a1a\],
+.theme-branco-luxo .bg-\[\#1a1a1a\],
+.theme-branco .bg-\[\#252525\],
+.theme-branco-luxo .bg-\[\#252525\] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #D4AF37 !important;
+  color: #2D2419 !important;
+}
+
+/* Selected / Active Quadrados with Glow */
+.theme-branco .gold-border-glow-active,
+.theme-branco-luxo .gold-border-glow-active,
+.theme-branco .from-\[\#1d222e\],
+.theme-branco-luxo .from-\[\#1d222e\],
+.theme-branco .bg-amber-500\/20,
+.theme-branco-luxo .bg-amber-500\/20 {
+  background: linear-gradient(135deg, #FFFDF7 0%, #FAF0D7 100%) !important;
+  border: 1.5px solid #D4AF37 !important;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35) !important;
+}
+
+/* Header & Navigation Bar */
+.theme-branco header,
+.theme-branco-luxo header,
+.theme-branco nav,
+.theme-branco-luxo nav {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: #D4AF37 !important;
+  box-shadow: 0 4px 20px rgba(184, 134, 11, 0.12) !important;
+}
+
+/* Gold Text Gradients & Metallic Accents */
+.theme-branco .gold-text-gradient,
+.theme-branco-luxo .gold-text-gradient {
+  background: linear-gradient(135deg, #997008 0%, #D4AF37 50%, #805B00 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 800 !important;
+}
+
+.theme-branco .text-\[\#d4af37\],
+.theme-branco-luxo .text-\[\#d4af37\],
+.theme-branco .text-\[\#D4AF37\],
+.theme-branco-luxo .text-\[\#D4AF37\],
+.theme-branco .text-amber-300,
+.theme-branco-luxo .text-amber-300,
+.theme-branco .text-amber-400,
+.theme-branco-luxo .text-amber-400,
+.theme-branco .text-amber-500,
+.theme-branco-luxo .text-amber-500 {
+  color: #9E7307 !important;
+  font-weight: 700 !important;
+}
+
+.theme-branco .gold-bg-gradient,
+.theme-branco-luxo .gold-bg-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #C59B27 50%, #B8860B 100%) !important;
+  color: #2D2419 !important;
+  font-weight: 800 !important;
+  border: 1px solid #B8860B !important;
+  box-shadow: 0 4px 14px rgba(184, 134, 11, 0.35) !important;
+}
+
+/* Deep Rich Dark Brown (#2D2419) Text Overrides for Optimal Contrast */
+.theme-branco .text-slate-100,
+.theme-branco-luxo .text-slate-100,
+.theme-branco .text-slate-200,
+.theme-branco-luxo .text-slate-200,
+.theme-branco .text-gray-100,
+.theme-branco-luxo .text-gray-100,
+.theme-branco .text-gray-200,
+.theme-branco-luxo .text-gray-200,
+.theme-branco .text-white,
+.theme-branco-luxo .text-white,
+.theme-branco h1,
+.theme-branco-luxo h1,
+.theme-branco h2,
+.theme-branco-luxo h2,
+.theme-branco h3,
+.theme-branco-luxo h3,
+.theme-branco h4,
+.theme-branco-luxo h4 {
+  color: #2D2419 !important;
+  font-weight: 700 !important;
+}
+
+.theme-branco .text-slate-300,
+.theme-branco-luxo .text-slate-300,
+.theme-branco .text-slate-400,
+.theme-branco-luxo .text-slate-400,
+.theme-branco .text-gray-300,
+.theme-branco-luxo .text-gray-300,
+.theme-branco .text-gray-400,
+.theme-branco-luxo .text-gray-400,
+.theme-branco p,
+.theme-branco-luxo p,
+.theme-branco span,
+.theme-branco-luxo span {
+  color: #2D2419 !important;
+}
+
+.theme-branco .text-slate-500,
+.theme-branco-luxo .text-slate-500,
+.theme-branco .text-gray-500,
+.theme-branco-luxo .text-gray-500 {
+  color: #4A3C2C !important;
+}
+
+/* Borders Across Cards and Items */
+.theme-branco .border-slate-800,
+.theme-branco-luxo .border-slate-800,
+.theme-branco .border-slate-800\/80,
+.theme-branco-luxo .border-slate-800\/80,
+.theme-branco .border-slate-800\/60,
+.theme-branco-luxo .border-slate-800\/60,
+.theme-branco .border-slate-800\/50,
+.theme-branco-luxo .border-slate-800\/50,
+.theme-branco .border-slate-700,
+.theme-branco-luxo .border-slate-700,
+.theme-branco .border-slate-700\/80,
+.theme-branco-luxo .border-slate-700\/80,
+.theme-branco .border-\[\#2A2A2A\],
+.theme-branco-luxo .border-\[\#2A2A2A\],
+.theme-branco .border-\[\#2a2a2a\],
+.theme-branco-luxo .border-\[\#2a2a2a\] {
+  border-color: rgba(212, 175, 55, 0.45) !important;
+}
+
+/* Inputs, Textareas & Selects */
+.theme-branco input,
+.theme-branco-luxo input,
+.theme-branco textarea,
+.theme-branco-luxo textarea,
+.theme-branco select,
+.theme-branco-luxo select {
+  background-color: #FFFDF8 !important;
+  color: #0F172A !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+}
+
+.theme-branco input::placeholder,
+.theme-branco-luxo input::placeholder,
+.theme-branco textarea::placeholder,
+.theme-branco-luxo textarea::placeholder {
+  color: #8C7D6B !important;
+}
+
+/* Period Badges Inside Cards */
+.theme-branco .bg-emerald-950\/60,
+.theme-branco-luxo .bg-emerald-950\/60 {
+  background-color: #ECFDF5 !important;
+  color: #065F46 !important;
+  border-color: #A7F3D0 !important;
+}
+
+.theme-branco .bg-amber-950\/90,
+.theme-branco-luxo .bg-amber-950\/90 {
+  background-color: #FEF3C7 !important;
+  color: #92400E !important;
+  border-color: #FCD34D !important;
+}
+
+/* Scrollbars in White Luxury Mode */
+.theme-branco ::-webkit-scrollbar-track,
+.theme-branco-luxo ::-webkit-scrollbar-track {
+  background: #F8F5EE;
+}
+.theme-branco ::-webkit-scrollbar-thumb,
+.theme-branco-luxo ::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+
+
 

@@ -4,19 +4,31 @@
   "description": "Aplicativo de agendamento de horários e portfólio do Salão Reis pelo hair stylist Adson.",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icon-192.png?v=2.0",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-512.png?v=2.0",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png?v=2.0",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icon.png?v=2.0",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": "/",
+  "start_url": "/?pwa_v=2.0",
   "background_color": "#121212",
   "theme_color": "#121212",
   "display": "standalone",

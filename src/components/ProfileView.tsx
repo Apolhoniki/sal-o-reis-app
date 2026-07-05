@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Crown, MapPin, Phone, Instagram, Clock, Scissors, Award, Sparkles, Edit3, Save, Plus, X, Trash2, Calendar } from 'lucide-react';
-import { ServiceItem, AdsonProfileInfo } from '../types';
+import { Crown, MapPin, Phone, Instagram, Clock, Scissors, Award, Sparkles, Edit3, Save, Plus, X, Trash2, Calendar, Palette, Sun, Moon, CheckCircle2 } from 'lucide-react';
+import { ServiceItem, AdsonProfileInfo, ThemeMode } from '../types';
 import { SALAO_NAME } from '../data/mockData';
 
 interface ProfileViewProps {
@@ -11,6 +11,8 @@ interface ProfileViewProps {
   onAddService?: (newSrv: Omit<ServiceItem, 'id'>) => void;
   onDeleteService?: (id: string) => void;
   onSelectServiceToBook?: (serviceName: string) => void;
+  themeMode?: ThemeMode;
+  onToggleTheme?: () => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -21,6 +23,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onAddService,
   onDeleteService,
   onSelectServiceToBook,
+  themeMode = 'preto-luxo',
+  onToggleTheme,
 }) => {
   // Bio/Info Editing Modal State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -180,6 +184,69 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <Clock className="w-4 h-4 text-[#D4AF37] shrink-0" />
             <span>{profileInfo.operatingHours}</span>
           </p>
+        </div>
+      </div>
+
+      {/* Theme Selector Section */}
+      <div className="dark-card-bg rounded-3xl border border-[#2A2A2A] p-5 shadow-lg space-y-3">
+        <h3 className="font-cinzel text-sm font-bold text-slate-200 flex items-center gap-2">
+          <Palette className="w-4 h-4 text-[#D4AF37]" />
+          Aparência do App (Tema Visual)
+        </h3>
+        <p className="text-xs text-slate-300">
+          Alterne entre os temas visuais luxuosos do Salão Reis. Sua preferência fica salva automaticamente.
+        </p>
+
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          {/* Option 1: Preto Luxo */}
+          <button
+            onClick={() => {
+              if (themeMode !== 'preto-luxo' && onToggleTheme) onToggleTheme();
+            }}
+            className={`p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between ${
+              themeMode === 'preto-luxo'
+                ? 'bg-[#121212] border-[#D4AF37] ring-2 ring-[#D4AF37]/50 shadow-lg'
+                : 'bg-[#1A1A1A] border-[#2A2A2A] hover:border-[#D4AF37]/40 opacity-80'
+            }`}
+          >
+            {themeMode === 'preto-luxo' && (
+              <div className="absolute top-2.5 right-2.5 text-[#D4AF37]">
+                <CheckCircle2 className="w-4 h-4 fill-[#D4AF37] text-black" />
+              </div>
+            )}
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-full bg-[#0A0A0A] border border-[#D4AF37] flex items-center justify-center">
+                <Moon className="w-3.5 h-3.5 text-[#D4AF37]" />
+              </div>
+              <span className="text-xs font-bold text-slate-100">Preto Luxo</span>
+            </div>
+            <p className="text-[10px] text-slate-400">Canos escuros, elegância & detalhes dourados</p>
+          </button>
+
+          {/* Option 2: Branco Luxo */}
+          <button
+            onClick={() => {
+              if (themeMode !== 'branco-luxo' && onToggleTheme) onToggleTheme();
+            }}
+            className={`p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between ${
+              themeMode === 'branco-luxo'
+                ? 'bg-white border-[#D4AF37] ring-2 ring-[#D4AF37]/50 shadow-lg text-slate-900'
+                : 'bg-slate-100 border-slate-300 hover:border-[#D4AF37]/40 opacity-80 text-slate-800'
+            }`}
+          >
+            {themeMode === 'branco-luxo' && (
+              <div className="absolute top-2.5 right-2.5 text-[#D4AF37]">
+                <CheckCircle2 className="w-4 h-4 fill-[#D4AF37] text-black" />
+              </div>
+            )}
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#D4AF37] flex items-center justify-center shadow-sm">
+                <Sun className="w-3.5 h-3.5 text-amber-600 fill-amber-500/30" />
+              </div>
+              <span className="text-xs font-bold text-slate-900">Branco Luxo</span>
+            </div>
+            <p className="text-[10px] text-slate-600">Off-white sofisticado, clean & fácil leitura</p>
+          </button>
         </div>
       </div>
 

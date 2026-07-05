@@ -1,30 +1,34 @@
-const CACHE_NAME = 'salao-reis-v1';
+const CACHE_NAME = 'salao-reis-v2.0';
 const ASSETS_TO_CACHE = [
   '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/index.html?v=2.0',
+  '/manifest.json?v=2.0',
+  '/icon-192.png?v=2.0',
+  '/icon-512.png?v=2.0',
+  '/apple-touch-icon.png?v=2.0',
+  '/pwa-icon.png?v=2.0',
+  '/pwa-icon.jpg?v=2.0'
 ];
 
-// Install Event - Cache initial core shell
+// Install Event - Cache initial core shell & activate immediately
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Caching App Shell');
+      console.log('[SW] Caching updated PWA shell v2.0');
       return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
-// Activate Event - Clean up stale caches
+// Activate Event - Purge stale caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cache);
+            console.log('[SW] Purging old cache version:', cache);
             return caches.delete(cache);
           }
         })

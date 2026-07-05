@@ -9,6 +9,7 @@ import {
   ActiveTab,
   Period,
   AdsonProfileInfo,
+  ThemeMode,
 } from './types';
 import {
   INITIAL_DAYS,
@@ -47,10 +48,51 @@ import { BottomNavigation } from './components/BottomNavigation';
 import { PinModal } from './components/PinModal';
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import { DatePaginationControls } from './components/DatePaginationControls';
+import { PullToRefresh } from './components/PullToRefresh';
 import { parseDateFromId } from './utils/dateHelpers';
 import { Sparkles, Calendar, Heart, ShieldAlert, ChevronRight, MessageSquare } from 'lucide-react';
 
 export default function App() {
+  // Theme State ("Preto Luxo" | "Branco Luxo")
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    try {
+      const savedTheme = localStorage.getItem('salao_reis_theme_mode') || localStorage.getItem('salao_reis_theme');
+      if (savedTheme === 'branco-luxo' || savedTheme === 'branco') {
+        return 'branco-luxo';
+      }
+    } catch (e) {
+      console.error('Error loading theme from localStorage:', e);
+    }
+    return 'preto-luxo';
+  });
+
+  const [isRefreshingData, setIsRefreshingData] = useState(false);
+
+  useEffect(() => {
+    if (themeMode === 'branco-luxo') {
+      document.body.classList.add('theme-branco-luxo');
+      document.body.classList.remove('theme-preto-luxo');
+      document.documentElement.classList.add('theme-branco');
+      document.documentElement.classList.remove('theme-preto');
+    } else {
+      document.body.classList.add('theme-preto-luxo');
+      document.body.classList.remove('theme-branco-luxo');
+      document.documentElement.classList.add('theme-preto');
+      document.documentElement.classList.remove('theme-branco');
+    }
+  }, [themeMode]);
+
+  const handleToggleTheme = () => {
+    const nextTheme: ThemeMode = themeMode === 'preto-luxo' ? 'branco-luxo' : 'preto-luxo';
+    setThemeMode(nextTheme);
+    try {
+      localStorage.setItem('salao_reis_theme_mode', nextTheme);
+      localStorage.setItem('salao_reis_theme', nextTheme === 'branco-luxo' ? 'branco' : 'preto');
+    } catch (e) {
+      console.error('Error saving theme to localStorage:', e);
+    }
+  };
+
   // App State
   const [days, setDays] = useState<DaySchedule[]>(INITIAL_DAYS);
   const [selectedYearMonth, setSelectedYearMonth] = useState<string>('2026-07');
@@ -102,6 +144,17 @@ export default function App() {
       console.error('[App] Error loading Supabase data:', err);
     }
   }, []);
+
+  const handleRefreshData = useCallback(async () => {
+    setIsRefreshingData(true);
+    try {
+      await loadSupabaseData();
+    } catch (err) {
+      console.error('Error refreshing data:', err);
+    } finally {
+      setIsRefreshingData(false);
+    }
+  }, [loadSupabaseData]);
 
   useEffect(() => {
     loadSupabaseData();
@@ -502,26 +555,31 @@ export default function App() {
   const unreadNotificationsCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-[#090b0e] text-slate-100 flex flex-col items-center justify-start p-0 sm:p-4 md:p-6 selection:bg-[#d4af37] selection:text-slate-950 font-sans">
-      
-      {/* Outer Container or Smartphone Shell Frame */}
-      <div
-        className={`w-full transition-all duration-300 ${
-          isSmartphoneFrame
-            ? 'max-w-md my-0 sm:my-3 rounded-none sm:rounded-[40px] border-0 sm:border-8 border-slate-800/90 shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden bg-[#0d0f12] relative min-h-screen sm:min-h-[840px] flex flex-col'
-            : 'max-w-2xl bg-[#0d0f12] min-h-screen rounded-none sm:rounded-3xl border-0 sm:border border-slate-800/80 p-0 shadow-2xl relative flex flex-col'
-        }`}
-      >
-        {/* Fixed Header */}
-        <Header
-          isAdmin={isAdmin}
-          onExitAdmin={handleExitAdmin}
-          unreadCount={unreadNotificationsCount}
-          onOpenNotifications={() => setActiveTab('notificacoes')}
-          isSmartphoneFrame={isSmartphoneFrame}
-          onToggleFrame={() => setIsSmartphoneFrame(!isSmartphoneFrame)}
-          onTripleClickTitle={() => setIsPinModalOpen(true)}
-        />
+    <PullToRefresh onRefresh={handleRefreshData} themeMode={themeMode}>
+      <div className="min-h-screen bg-[#090b0e] text-slate-100 flex flex-col items-center justify-start p-0 sm:p-4 md:p-6 selection:bg-[#d4af37] selection:text-slate-950 font-sans">
+        
+        {/* Outer Container or Smartphone Shell Frame */}
+        <div
+          className={`w-full transition-all duration-300 ${
+            isSmartphoneFrame
+              ? 'max-w-md my-0 sm:my-3 rounded-none sm:rounded-[40px] border-0 sm:border-8 border-slate-800/90 shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden bg-[#0d0f12] relative min-h-screen sm:min-h-[840px] flex flex-col'
+              : 'max-w-2xl bg-[#0d0f12] min-h-screen rounded-none sm:rounded-3xl border-0 sm:border border-slate-800/80 p-0 shadow-2xl relative flex flex-col'
+          }`}
+        >
+          {/* Fixed Header */}
+          <Header
+            isAdmin={isAdmin}
+            onExitAdmin={handleExitAdmin}
+            unreadCount={unreadNotificationsCount}
+            onOpenNotifications={() => setActiveTab('notificacoes')}
+            isSmartphoneFrame={isSmartphoneFrame}
+            onToggleFrame={() => setIsSmartphoneFrame(!isSmartphoneFrame)}
+            onTripleClickTitle={() => setIsPinModalOpen(true)}
+            themeMode={themeMode}
+            onToggleTheme={handleToggleTheme}
+            onRefreshData={handleRefreshData}
+            isRefreshingData={isRefreshingData}
+          />
 
         {/* Main Content View Container */}
         <main className="flex-1 p-4 overflow-y-auto relative">
@@ -684,6 +742,8 @@ export default function App() {
               onSelectServiceToBook={(srvName) => {
                 setActiveTab('agendar');
               }}
+              themeMode={themeMode}
+              onToggleTheme={handleToggleTheme}
             />
           )}
 
@@ -749,5 +809,6 @@ export default function App() {
         <PWAInstallPrompt />
       </div>
     </div>
+    </PullToRefresh>
   );
 }
