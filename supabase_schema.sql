@@ -88,11 +88,25 @@ CREATE TABLE IF NOT EXISTS clientes (
 );
 
 
--- 5. HABILITAR ROW LEVEL SECURITY (RLS) E POLÍTICAS PÚBLICAS DE LEITURA E ESCRITA
+-- 5. TABELA DE NOTIFICAÇÕES INDIVIDUAIS POR CLIENTE (Notificações do PWA)
+CREATE TABLE IF NOT EXISTS notificacoes (
+  id TEXT PRIMARY KEY,
+  client_phone TEXT, -- telefone do cliente especifico (se nulo ou 'GERAL', visivel para comunicados gerais)
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type TEXT DEFAULT 'confirmation', -- 'confirmation' | 'alert' | 'general'
+  read BOOLEAN DEFAULT false,
+  timestamp TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+
+-- 6. HABILITAR ROW LEVEL SECURITY (RLS) E POLÍTICAS PÚBLICAS DE LEITURA E ESCRITA
 ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dias_agenda ENABLE ROW LEVEL SECURITY;
 ALTER TABLE agendamentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notificacoes ENABLE ROW LEVEL SECURITY;
 
 -- Apagar políticas anteriores para reconfiguração limpa
 DROP POLICY IF EXISTS "Permitir leitura total em configuracoes" ON configuracoes;
@@ -103,6 +117,8 @@ DROP POLICY IF EXISTS "Permitir leitura total em agendamentos" ON agendamentos;
 DROP POLICY IF EXISTS "Permitir escrita em agendamentos" ON agendamentos;
 DROP POLICY IF EXISTS "Permitir leitura total em clientes" ON clientes;
 DROP POLICY IF EXISTS "Permitir escrita em clientes" ON clientes;
+DROP POLICY IF EXISTS "Permitir leitura total em notificacoes" ON notificacoes;
+DROP POLICY IF EXISTS "Permitir escrita em notificacoes" ON notificacoes;
 
 -- Criar políticas de acesso público para o aplicativo PWA
 CREATE POLICY "Permitir leitura total em configuracoes" ON configuracoes FOR SELECT USING (true);
@@ -117,6 +133,9 @@ CREATE POLICY "Permitir escrita em agendamentos" ON agendamentos FOR ALL USING (
 CREATE POLICY "Permitir leitura total em clientes" ON clientes FOR SELECT USING (true);
 CREATE POLICY "Permitir escrita em clientes" ON clientes FOR ALL USING (true);
 
+CREATE POLICY "Permitir leitura total em notificacoes" ON notificacoes FOR SELECT USING (true);
+CREATE POLICY "Permitir escrita em notificacoes" ON notificacoes FOR ALL USING (true);
 
--- 6. HABILITAR RECURSO DE TEMPO REAL (REALTIME) NO SUPABASE
-ALTER PUBLICATION supabase_realtime ADD TABLE configuracoes, dias_agenda, agendamentos, clientes;
+
+-- 7. HABILITAR RECURSO DE TEMPO REAL (REALTIME) NO SUPABASE
+ALTER PUBLICATION supabase_realtime ADD TABLE configuracoes, dias_agenda, agendamentos, clientes, notificacoes;

@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { AdsonProfileInfo, DaySchedule, BookingRequest, ClientHistoryItem } from '../types';
+import { AdsonProfileInfo, DaySchedule, BookingRequest, ClientHistoryItem, AppNotification } from '../types';
 
 // ==========================================
 // 1. CONFIGURAÇÕES & PERFIL DO ADSON
@@ -359,7 +359,112 @@ export async function deleteClientGroupFromSupabase(clientName: string): Promise
 }
 
 // ==========================================
-// 5. INSCRIÇÃO EM TEMPO REAL (REALTIME)
+// 5. NOTIFICAÇÕES (CLIENTE E ADMIN)
+// ==========================================
+
+export async function fetchNotificationsFromSupabase(clientPhone?: string, isAdmin?: boolean): Promise<AppNotification[] | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  try {
+    let query = supabase.from('notificacoes').select('*').order('created_at', { ascending: false });
+
+    // If client (and not admin), filter by client's phone or general announcements
+    if (!isAdmin) {
+      if (clientPhone && clientPhone.trim()) {
+        const clean = clientPhone.trim();
+        query = query.or(`client_phone.eq.${clean},client_phone.eq.GERAL,client_phone.is.null`);
+      } else {
+        // Unidentified client: show only general broadcast notifications
+        query = query.or('client_phone.eq.GERAL,client_phone.is.null');
+      }
+    }
+
+    const { data, error } = await query;
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data.map((n) => ({
+      id: n.id,
+      title: n.title,
+      message: n.message,
+      timestamp: n.timestamp || (n.created_at ? new Date(n.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Hoje'),
+      read: n.read || false,
+      type: n.type || 'confirmation',
+      clientPhone: n.client_phone,
+    }));
+  } catch (err) {
+    console.error('[Supabase] Exception fetching notifications:', err);
+    return null;
+  }
+}
+
+export async function createNotificationInSupabase(notif: AppNotification): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+
+  try {
+    const { error } = await supabase.from('notificacoes').insert({
+      id: notif.id,
+      client_phone: notif.clientPhone || 'GERAL',
+      title: notif.title,
+      message: notif.message,
+      type: notif.type || 'confirmation',
+      read: notif.read || false,
+      timestamp: notif.timestamp || 'Agora',
+    });
+
+    if (error) {
+      console.error('[Supabase] Error creating notification:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('[Supabase] Exception creating notification:', err);
+    return false;
+  }
+}
+
+export async function markNotificationReadInSupabase(notificationId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+
+  try {
+    const { error } = await supabase.from('notificacoes').update({ read: true }).eq('id', notificationId);
+    if (error) {
+      console.error('[Supabase] Error marking notification read:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('[Supabase] Exception marking notification read:', err);
+    return false;
+  }
+}
+
+export async function markAllNotificationsReadInSupabase(clientPhone?: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+
+  try {
+    let query = supabase.from('notificacoes').update({ read: true });
+    if (clientPhone) {
+      query = query.eq('client_phone', clientPhone);
+    } else {
+      query = query.eq('read', false);
+    }
+    const { error } = await query;
+    if (error) {
+      console.error('[Supabase] Error marking all notifications read:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('[Supabase] Exception marking all notifications read:', err);
+    return false;
+  }
+}
+
+// ==========================================
+// 6. INSCRIÇÃO EM TEMPO REAL (REALTIME)
 // ==========================================
 
 export function subscribeToRealtimeUpdates(callbacks: {
@@ -367,6 +472,7 @@ export function subscribeToRealtimeUpdates(callbacks: {
   onDaysChange?: () => void;
   onBookingsChange?: () => void;
   onClientsChange?: () => void;
+  onNotificationsChange?: () => void;
 }) {
   if (!isSupabaseConfigured()) return () => {};
 
@@ -401,6 +507,13 @@ export function subscribeToRealtimeUpdates(callbacks: {
       { event: '*', schema: 'public', table: 'clientes' },
       () => {
         if (callbacks.onClientsChange) callbacks.onClientsChange();
+      }
+    )
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'notificacoes' },
+      () => {
+        if (callbacks.onNotificationsChange) callbacks.onNotificationsChange();
       }
     )
     .subscribe();

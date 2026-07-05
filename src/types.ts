@@ -99,6 +99,7 @@ export interface AppNotification {
   timestamp: string;
   read: boolean;
   type: 'confirmation' | 'reminder' | 'system';
+  clientPhone?: string;
 }
 
 export type ActiveTab = 'agendar' | 'portfolio' | 'notificacoes' | 'perfil' | 'admin';

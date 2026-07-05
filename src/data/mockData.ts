@@ -234,21 +234,4 @@ export const INITIAL_CLIENT_HISTORY: ClientHistoryItem[] = [
   }
 ];
 
-export const INITIAL_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: 'notif-1',
-    title: 'Agendamento Confirmado!',
-    message: 'Seu agendamento para Terça-feira (Dia 07) no período da Manhã às 10:00h foi confirmado com o Adson.',
-    timestamp: 'Hoje, 10:05',
-    read: false,
-    type: 'confirmation',
-  },
-  {
-    id: 'notif-2',
-    title: 'Dica do Salão Reis',
-    message: 'Lembre-se de não lavar os cabelos no dia do procedimento de mechas para proteger o couro cabeludo.',
-    timestamp: 'Ontem',
-    read: true,
-    type: 'system',
-  },
-];
+export const INITIAL_NOTIFICATIONS: AppNotification[] = [];

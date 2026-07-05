@@ -30,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onRefreshData,
   isRefreshingData = false,
 }) => {
+  const [imgError, setImgError] = React.useState(false);
   const clickCountRef = useRef(0);
   const lastClickTimeRef = useRef(0);
 
@@ -61,12 +62,17 @@ export const Header: React.FC<HeaderProps> = ({
           title="Salão Reis - Clique 3x para acesso restrito do profissional"
         >
           <div className="w-9 h-9 rounded-full overflow-hidden bg-[#1a1a1a] border border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.4)] group-hover:border-[#F5E08B] transition-colors">
-            <img
-              src="/icon-192.png?v=2.0"
-              alt="Salão Reis Logo"
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
+            {!imgError ? (
+              <img
+                src="/icon-192.png?v=2.0"
+                alt="Salão Reis Logo"
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <Crown className="w-5 h-5 text-[#D4AF37] stroke-[2.2]" />
+            )}
           </div>
           <div>
             <h1 className="font-cinzel text-lg font-bold tracking-[0.2em] text-[#D4AF37] uppercase leading-none group-hover:text-[#F5E08B] transition-colors">

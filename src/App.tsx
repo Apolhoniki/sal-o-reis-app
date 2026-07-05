@@ -35,6 +35,9 @@ import {
   saveClientToSupabase,
   deleteClientFromSupabase,
   deleteClientGroupFromSupabase,
+  fetchNotificationsFromSupabase,
+  createNotificationInSupabase,
+  markAllNotificationsReadInSupabase,
   subscribeToRealtimeUpdates,
 } from './services/supabaseService';
 import { Header } from './components/Header';
@@ -114,6 +117,37 @@ export default function App() {
     return INITIAL_PROFILE_INFO;
   });
 
+  const [activeTab, setActiveTab] = useState<ActiveTab>('agendar');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+
+  // Saved Client Profile State from LocalStorage
+  const [savedClientName, setSavedClientName] = useState<string | null>(() => {
+    try {
+      const saved = localStorage.getItem('salao_reis_client_profile');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.clientName || null;
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
+  });
+
+  const [savedClientPhone, setSavedClientPhone] = useState<string | null>(() => {
+    try {
+      const saved = localStorage.getItem('salao_reis_client_profile');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.clientPhone || null;
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
+  });
+
   // Supabase Data Initialization & Realtime Subscription
   const loadSupabaseData = useCallback(async () => {
     if (!isSupabaseConfigured()) return;
@@ -140,10 +174,15 @@ export default function App() {
       if (remoteClients) {
         setHistory(remoteClients);
       }
+
+      const remoteNotifs = await fetchNotificationsFromSupabase(savedClientPhone || undefined, isAdmin);
+      if (remoteNotifs) {
+        setNotifications(remoteNotifs);
+      }
     } catch (err) {
       console.error('[App] Error loading Supabase data:', err);
     }
-  }, []);
+  }, [savedClientPhone, isAdmin]);
 
   const handleRefreshData = useCallback(async () => {
     setIsRefreshingData(true);
@@ -176,12 +215,16 @@ export default function App() {
         const remoteClients = await fetchClientsFromSupabase();
         if (remoteClients) setHistory(remoteClients);
       },
+      onNotificationsChange: async () => {
+        const remoteNotifs = await fetchNotificationsFromSupabase(savedClientPhone || undefined, isAdmin);
+        if (remoteNotifs) setNotifications(remoteNotifs);
+      },
     });
 
     return () => {
       unsubscribe();
     };
-  }, [loadSupabaseData]);
+  }, [loadSupabaseData, savedClientPhone, isAdmin]);
 
   const handleUpdateProfileInfo = (updatedInfo: AdsonProfileInfo) => {
     setProfileInfo(updatedInfo);
@@ -192,24 +235,6 @@ export default function App() {
       console.error('Error saving profile info to localStorage:', e);
     }
   };
-
-  const [activeTab, setActiveTab] = useState<ActiveTab>('agendar');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
-
-  // Saved Client Profile State from LocalStorage
-  const [savedClientName, setSavedClientName] = useState<string | null>(() => {
-    try {
-      const saved = localStorage.getItem('salao_reis_client_profile');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.clientName || null;
-      }
-    } catch (e) {
-      return null;
-    }
-    return null;
-  });
 
   const handleExitAdmin = () => {
     setIsAdmin(false);
@@ -308,6 +333,17 @@ export default function App() {
     if (bookingData.clientName) {
       setSavedClientName(bookingData.clientName);
     }
+    if (bookingData.clientPhone) {
+      setSavedClientPhone(bookingData.clientPhone);
+      try {
+        localStorage.setItem(
+          'salao_reis_client_profile',
+          JSON.stringify({ clientName: bookingData.clientName, clientPhone: bookingData.clientPhone })
+        );
+      } catch (e) {
+        console.error('Error saving client profile:', e);
+      }
+    }
 
     const newBooking: BookingRequest = {
       id: `bk-${Date.now()}`,
@@ -347,17 +383,19 @@ export default function App() {
       })
     );
 
-    // Add confirmation notification
+    // Add confirmation notification specifically for this client phone
     const newNotif: AppNotification = {
       id: `notif-${Date.now()}`,
       title: 'Solicitação Enviada com Sucesso!',
-      message: `Você solicitou agendamento para ${bookingData.dayFormatted} (${bookingData.period.toUpperCase()}). O horário foi reservado no aplicativo do Salão Reis.`,
+      message: `Você solicitou agendamento para ${bookingData.dayFormatted} (${bookingData.period.toUpperCase()}). Aguarde a confirmação de horário do Adson.`,
       timestamp: 'Agora',
       read: false,
       type: 'confirmation',
+      clientPhone: bookingData.clientPhone,
     };
 
     setNotifications((prev) => [newNotif, ...prev]);
+    createNotificationInSupabase(newNotif);
   };
 
   // Admin Handler: Confirm booking with exact time
@@ -365,13 +403,21 @@ export default function App() {
     let confirmedDayId = '';
     let confirmedPeriod: Period = 'tarde';
     let clientName = '';
+    let clientPhone = '';
+    let dayFormatted = '';
+
+    const targetBooking = bookings.find((b) => b.id === bookingId);
+    if (targetBooking) {
+      clientName = targetBooking.clientName;
+      clientPhone = targetBooking.clientPhone;
+      dayFormatted = targetBooking.dayFormatted;
+    }
 
     setBookings((prev) =>
       prev.map((bk) => {
         if (bk.id === bookingId) {
           confirmedDayId = bk.dateId;
           confirmedPeriod = bk.period;
-          clientName = bk.clientName;
           return {
             ...bk,
             status: 'confirmado',
@@ -407,13 +453,15 @@ export default function App() {
 
     const newNotif: AppNotification = {
       id: `notif-${Date.now()}`,
-      title: 'Horário Confirmado!',
-      message: `Agendamento de ${clientName} confirmado para ${exactTime}.`,
+      title: 'Agendamento Confirmado!',
+      message: `Olá, ${clientName}! Seu agendamento para ${dayFormatted} foi CONFIRMADO com o Adson Reis para às ${exactTime}.`,
       timestamp: 'Agora',
       read: false,
       type: 'confirmation',
+      clientPhone: clientPhone,
     };
     setNotifications((prev) => [newNotif, ...prev]);
+    createNotificationInSupabase(newNotif);
   };
 
   // Handler for Adson opening/closing extra slot (Vaga Extra / Encaixe)
